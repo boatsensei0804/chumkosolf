@@ -1,0 +1,11 @@
+# dev image: hot reload ด้วย air (ใช้คู่กับ volume mount ใน docker-compose.yml)
+FROM golang:1.26-alpine
+WORKDIR /app
+RUN apk add --no-cache git tzdata
+ENV TZ=Asia/Bangkok
+RUN go install github.com/air-verse/air@latest
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+EXPOSE 8080
+CMD ["air", "-c", ".air.toml"]

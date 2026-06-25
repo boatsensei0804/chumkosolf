@@ -1,0 +1,22 @@
+# env / secrets
+.env
+*.local
+
+# backend (Go)
+backend/tmp/
+backend/*.test
+backend/api
+
+# frontend (Next.js / Node)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+npm-debug.log*
+*.tsbuildinfo
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
