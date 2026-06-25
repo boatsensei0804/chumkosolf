@@ -1,18 +1,18 @@
 import type { Config } from "tailwindcss";
 
-// design token กลาง (ตรงกับ antd ConfigProvider ใน src/lib/theme.ts และ design-system/MASTER.md)
-// พาเลตฟ้า-ขาว #2563EB ตาม ui-ux-pro-max (Data-Dense Dashboard) + accent เขียว + status colors
+// design token กลาง — Government/Public Service palette (ui-ux-pro-max)
+// navy + professional blue, high-contrast, data-dense
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#2563EB", // primary — ปุ่ม/link/active
-          deep: "#1E40AF", // ปลาย gradient / จุดเน้นสุด
-          bright: "#3B82F6", // secondary / hover
-          accent: "#059669", // accent เขียว (CTA รอง, success เน้น)
-          cyan: "#00D4EB", // decorative (วงตกแต่ง hero)
+          DEFAULT: "#0369A1", // accent — ปุ่ม/link/active (professional blue)
+          deep: "#075985", // hover/เข้ม
+          bright: "#0EA5E9", // highlight
+          navy: "#0F172A", // dark sidebar / surface เข้ม (primary)
+          slate: "#334155", // secondary
         },
       },
       fontFamily: {

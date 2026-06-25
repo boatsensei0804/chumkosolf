@@ -180,6 +180,7 @@ function PositionsSection({ personnelId }: { personnelId: string }): ReactNode {
       icon={<SafetyCertificateOutlined />}
       title="ตำแหน่งบริหาร"
       description="ผู้อำนวยการมีได้คนเดียวที่ดำรงตำแหน่ง"
+      accent="amber"
     >
       {isLoading ? (
         <Spin />
@@ -243,6 +244,7 @@ function StandingsSection({ personnelId }: { personnelId: string }): ReactNode {
       icon={<TrophyOutlined />}
       title="วิทยฐานะ"
       description="เก็บเป็นประวัติ — ระบุปัจจุบันได้รายการเดียว"
+      accent="violet"
     >
       {isLoading ? (
         <Spin />

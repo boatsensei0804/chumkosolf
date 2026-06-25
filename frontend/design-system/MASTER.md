@@ -13,22 +13,25 @@ Stack คงที่ (ห้ามเปลี่ยน): **Next.js + Ant Desig
 
 ## 1. สี (Color tokens)
 
-ทิศทางจาก **ui-ux-pro-max → Data-Dense Dashboard** กำหนดเป็น token กลางที่ `tailwind.config.ts` (`brand.*`) และ `src/lib/theme.ts` (antd) — **ห้าม hardcode hex ใน component**
+ทิศทางจาก **ui-ux-pro-max → Government/Public Service** (navy + professional blue, high-contrast, data-dense) กำหนดเป็น token กลางที่ `tailwind.config.ts` (`brand.*`) และ `src/lib/theme.ts` (antd) — **ห้าม hardcode hex ใน component** (ค่า brand.* ตรงกับ Tailwind sky/slate เป๊ะ เพื่อความเข้ากัน)
 
-| Token | HEX | ใช้กับ |
-|-------|-----|--------|
-| `brand.DEFAULT` | `#2563EB` | primary: ปุ่ม, link, active, ไอคอนเน้น |
-| `brand.deep` | `#1E40AF` | ปลาย gradient, จุดเน้นสุด |
-| `brand.bright` | `#3B82F6` | secondary, hover, link hover |
-| `brand.accent` | `#059669` | accent เขียว (CTA รอง, success เน้น) |
-| `brand.cyan` | `#00D4EB` | decorative (วงตกแต่งใน hero) |
-| white | `#FFFFFF` | พื้นการ์ด/พื้นผิว |
+| Token | HEX | = Tailwind | ใช้กับ |
+|-------|-----|-----------|--------|
+| `brand.DEFAULT` | `#0369A1` | sky-700 | primary: ปุ่ม, link, active, ไอคอนเน้น |
+| `brand.deep` | `#075985` | sky-800 | hover/เข้ม, ปลาย gradient |
+| `brand.bright` | `#0EA5E9` | sky-500 | highlight |
+| `brand.navy` | `#0F172A` | slate-900 | **dark sidebar / พื้นผิวเข้ม** |
+| `brand.slate` | `#334155` | slate-700 | secondary |
+| white | `#FFFFFF` | — | พื้นการ์ด/พื้นผิว |
 
-**Neutral (Tailwind slate):** พื้นแอป `slate-50 (#f8fafc)` · foreground `slate-900 (#0f172a)` · รอง `slate-500` · จาง `slate-400` · เส้น `slate-200`/`slate-100` (border รอง `#e4ecfc`)
+**Neutral:** พื้นแอป `slate-50 (#f8fafc)` · foreground `slate-900 (#0f172a)` · รอง `slate-500` · จาง `slate-400` · เส้น `slate-200`/`slate-100` (border รอง `#e2e8f0`)
 
-**Semantic / status (data-dense):** success = `#059669` / antd green · error = `#DC2626` / `text-red-500` · warning = `amber-*` — ใช้สีสถานะกับ badge/แถว เพื่อให้ scan ง่าย
+**Accent color-coding ต่อหมวด** (`src/shared/ui/accent.ts` — class คงที่กัน purge): blue/emerald/violet/amber/rose/slate · map หมวด: บุคลากร=blue, นักเรียน=emerald, เช็คชื่อ=violet, งบประมาณ=amber, ตั้งค่า=slate · ใช้กับ KPI strip, ไอคอนเมนู, หัวข้อ SectionCard ให้แต่ละหมวดมีสีประจำ (เด่น/จำง่าย)
 
-**กฎคอนทราสต์:** ตัวอักษรเนื้อหาใช้ `slate-800/900` (ไม่ใช่ฟ้า), `brand` เป็น action/accent เท่านั้น, ตัวอักษรบนพื้น gradient ฟ้าใช้ขาว (heading ใหญ่), ทุกคู่ ≥ 4.5:1
+**Semantic / status:** success `#059669` · error `#DC2626` · warning amber — ใช้กับ badge/แถวเพื่อ scan ง่าย
+
+**กฎคอนทราสต์:** เนื้อหาใช้ `slate-800/900`, `brand` เป็น action/accent, **ตัวอักษรบนพื้น navy/gradient ใช้ขาว/slate-300** (sidebar), ทุกคู่ ≥ 4.5:1
+> ⚠️ แก้ `tailwind.config.ts` (custom color) ต้อง **restart dev server** — HMR ไม่ reload config ทำให้ custom `brand-*` ไม่ generate (พื้น navy หาย ตัวขาวบนขาว)
 
 ---
 
@@ -48,23 +51,25 @@ Stack คงที่ (ห้ามเปลี่ยน): **Next.js + Ant Desig
 - **Radius:** ปุ่ม/อินพุต `rounded-lg`(antd 10) · การ์ด `rounded-xl`/`rounded-2xl` · pill `rounded-full` · โลโก้ `rounded-xl`
 - **Shadow:** เบามาก — การ์ดใช้ `border border-slate-200` เป็นหลัก + เงาจาง (`shadow-sm`/hover `shadow-md`) ไม่ใช้เงาหนา
 - **Border:** เส้นคั่น `border-slate-100`, ขอบการ์ด `border-slate-200`
-- **Container:** เนื้อหาหน้า `max-w-6xl` (ฟอร์มเดี่ยว `max-w-4xl`) จัดกึ่งกลาง `mx-auto`
+- **Density (data-dense vars):** card-padding ~12–16px, table row ~36px (`size="middle"/"small"`), gap 8px, header 56px, sidebar 240px, font 12–14px
+- **Container:** หน้า list/dashboard ใช้ **เต็มความกว้าง** · ฟอร์มเดี่ยว `max-w-4xl` · หน้าแก้ไขใช้ 2 คอลัมน์ (form + rail) บน `xl`
 
 ---
 
 ## 4. Layout หลัก
 
-- **Dashboard shell** (`features/navigation/DashboardLayout`): sidebar ขาว 256px (เดสก์ท็อป) / Drawer (มือถือ) + topbar sticky blur + content `bg-slate-50 p-4 md:p-6`
-- **Auth (login):** split-panel — แผงซ้าย gradient ฟ้า (แบรนด์+คุณค่า) / แผงขวา ฟอร์ม; มือถือซ่อนแผงซ้าย
+- **Dashboard shell** (`features/navigation/DashboardLayout`): **sidebar navy เข้ม `brand.navy` 240px** (เดสก์ท็อป) / Drawer (มือถือ) + topbar ขาว 56px (h-14) + content `bg-slate-50 p-4`
+- **Auth (login):** split-panel — แผงซ้าย gradient navy→blue (`.bg-brand-gradient`) / แผงขวา ฟอร์ม; มือถือซ่อนแผงซ้าย
 - Responsive: ทำงานได้ ~375px → desktop, ใช้ breakpoint `sm md lg xl` สม่ำเสมอ, ไม่มี horizontal scroll
 
 ---
 
 ## 5. Signature elements (เอกลักษณ์)
 
-1. **Brand mark:** โลโก้สี่เหลี่ยมมน `bg-gradient-to-br from-brand to-brand-deep` + ไอคอน `ReadOutlined` สีขาว + wordmark "ชุมโค / ระบบบริหารโรงเรียน"
-2. **Hero gradient:** แถบ `from-brand to-brand-deep` มุมมน + วงกลมตกแต่ง (`bg-white/10`, `bg-brand-cyan/15`) — ใช้เป็นโมเมนต์เด่น **จุดเดียวต่อหน้า** (หน้าแรก, แผง login)
-3. **Active nav bar:** เมนู active = พื้น `brand/10` + แถบ `bg-brand` ด้านซ้าย + ตัวหนา `text-brand-deep`
+1. **Brand mark:** โลโก้สี่เหลี่ยมมน `bg-brand` + ไอคอน `ReadOutlined` ขาว + wordmark "ชุมโค / ระบบบริหารโรงเรียน" (ขาวบน navy)
+2. **Dark navy sidebar:** พื้น `brand.navy` + ไอคอนเมนูสีตามหมวด (sky/emerald/violet/amber-400) — active = บล็อกสีทึบ `bg-brand text-white`
+3. **KPI cards:** แถบสี accent ด้านบน (`ACCENTS[x].strip`) + ไอคอน chip สี + ตัวเลขใหญ่ `.num` สี navy
+4. **Login gradient:** แผง `.bg-brand-gradient` (navy→blue) + วงตกแต่ง `bg-white/10`, `bg-brand-bright/20`
 
 ---
 

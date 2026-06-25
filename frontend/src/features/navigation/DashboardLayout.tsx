@@ -3,6 +3,7 @@
 import {
   AppstoreOutlined,
   DollarOutlined,
+  DownOutlined,
   HomeOutlined,
   LogoutOutlined,
   MenuOutlined,
@@ -31,6 +32,16 @@ const MENU_ICONS: Record<string, ReactNode> = {
   settings: <SettingOutlined />,
 };
 
+// สีไอคอนเมนูต่อหมวด (บนพื้น navy ใช้เฉดสว่าง) ให้เด่น/จำง่าย
+const NAV_ICON_COLOR: Record<string, string> = {
+  home: "text-sky-400",
+  personnel: "text-sky-400",
+  students: "text-emerald-400",
+  attendance: "text-violet-400",
+  budget: "text-amber-400",
+  settings: "text-slate-400",
+};
+
 const ROLE_LABEL: Record<UserRole, string> = {
   super_admin: "ผู้ดูแลระบบสูงสุด",
   teacher: "ครู",
@@ -38,22 +49,22 @@ const ROLE_LABEL: Record<UserRole, string> = {
   student: "นักเรียน",
 };
 
-// แบรนด์มาร์ก: โลโก้ gradient ฟ้า + wordmark ไทย (signature ของระบบ)
+// แบรนด์มาร์กบนพื้น navy (sidebar)
 function BrandMark(): ReactNode {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand-deep text-white shadow-sm">
-        <ReadOutlined className="text-lg" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-white">
+        <ReadOutlined />
       </div>
       <div className="leading-tight">
-        <div className="text-[15px] font-bold tracking-tight text-slate-800">ชุมโค</div>
+        <div className="text-sm font-bold tracking-tight text-white">ชุมโค</div>
         <div className="text-[11px] text-slate-400">ระบบบริหารโรงเรียน</div>
       </div>
     </div>
   );
 }
 
-// รายการเมนู (custom เพื่อคุม active state / coming-soon ได้เต็มที่)
+// เมนู (dark sidebar) — active = แถบ accent + พื้นสว่างจาง + ตัวขาว
 function NavList({
   items,
   activeKey,
@@ -64,7 +75,10 @@ function NavList({
   onNavigate: (item: MenuItemConfig) => void;
 }): ReactNode {
   return (
-    <nav className="flex flex-col gap-1 px-3 py-4">
+    <nav className="flex flex-col gap-0.5 px-2.5 py-3">
+      <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+        เมนู
+      </div>
       {items.map((item) => {
         const icon = MENU_ICONS[item.key] ?? <AppstoreOutlined />;
         const active = item.key === activeKey;
@@ -73,11 +87,11 @@ function NavList({
           return (
             <div
               key={item.key}
-              className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400"
+              className="flex cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-slate-500"
             >
               <span className="text-base">{icon}</span>
-              <span className="flex-1 text-sm">{item.label}</span>
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-400">
+              <span className="flex-1">{item.label}</span>
+              <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-slate-500">
                 เร็ว ๆ นี้
               </span>
             </div>
@@ -91,16 +105,13 @@ function NavList({
             onClick={() => onNavigate(item)}
             aria-current={active ? "page" : undefined}
             className={[
-              "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+              "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
               active
-                ? "bg-brand/10 font-semibold text-brand-deep"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                ? "bg-brand font-medium text-white shadow-sm"
+                : "text-slate-300 hover:bg-white/5 hover:text-white",
             ].join(" ")}
           >
-            {active && (
-              <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand" />
-            )}
-            <span className={["text-base", active ? "text-brand" : "text-slate-400 group-hover:text-slate-600"].join(" ")}>
+            <span className={active ? "text-white" : (NAV_ICON_COLOR[item.key] ?? "text-slate-400")}>
               {icon}
             </span>
             <span className="flex-1 text-left">{item.label}</span>
@@ -146,71 +157,70 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
   const role = user ? userRoleSchema.catch("student").parse(user.role) : "student";
   const roleLabel = user ? ROLE_LABEL[role] : "";
   const initial = user?.username.charAt(0).toUpperCase() ?? "?";
+  const today = new Intl.DateTimeFormat("th-TH", { dateStyle: "long" }).format(new Date());
 
-  const today = new Intl.DateTimeFormat("th-TH", { dateStyle: "full" }).format(new Date());
-
-  const nav = <NavList items={items} activeKey={activeKey} onNavigate={handleNavigate} />;
+  const sidebarInner = (
+    <div className="flex h-full flex-col bg-brand-navy">
+      <div className="flex h-14 items-center border-b border-white/10 px-4">
+        <BrandMark />
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <NavList items={items} activeKey={activeKey} onNavigate={handleNavigate} />
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex min-h-dvh bg-slate-50">
-      {/* sidebar (desktop) */}
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
-        <div className="flex h-16 items-center border-b border-slate-100 px-5">
-          <BrandMark />
-        </div>
-        <div className="flex-1 overflow-y-auto">{nav}</div>
-      </aside>
+      {/* sidebar (desktop) — navy enterprise */}
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 lg:block">{sidebarInner}</aside>
 
       {/* drawer (mobile) */}
       <Drawer
         placement="left"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        width={280}
-        styles={{ body: { padding: 0 }, header: { display: "none" } }}
+        width={240}
+        styles={{ body: { padding: 0 }, header: { display: "none" }, content: { background: "#0F172A" } }}
       >
-        <div className="flex h-16 items-center border-b border-slate-100 px-5">
-          <BrandMark />
-        </div>
-        {nav}
+        {sidebarInner}
       </Drawer>
 
       {/* main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur md:px-6">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               aria-label="เปิดเมนู"
               onClick={() => setDrawerOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 lg:hidden"
             >
               <MenuOutlined />
             </button>
-            <div className="leading-tight">
-              <h1 className="text-base font-semibold text-slate-800">{pageTitle}</h1>
-              <p className="hidden text-xs text-slate-400 sm:block">{today}</p>
-            </div>
+            <h1 className="text-sm font-semibold text-slate-800">{pageTitle}</h1>
+            <span className="num hidden text-xs text-slate-400 sm:inline">· {today}</span>
           </div>
 
           <Dropdown menu={{ items: userMenu }} trigger={["click"]} placement="bottomRight">
             <button
               type="button"
               aria-label="เมนูผู้ใช้"
-              className="flex items-center gap-2.5 rounded-xl py-1 pl-1 pr-2 transition-colors hover:bg-slate-100"
+              className="flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-slate-100"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-deep text-sm font-semibold text-white">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-xs font-semibold text-white">
                 {initial}
               </span>
               <span className="hidden text-left leading-tight sm:block">
                 <span className="block text-sm font-medium text-slate-800">{user?.username}</span>
-                <span className="block text-xs text-slate-400">{roleLabel}</span>
+                <span className="block text-[11px] text-slate-400">{roleLabel}</span>
               </span>
+              <DownOutlined className="hidden text-[10px] text-slate-400 sm:inline" />
             </button>
           </Dropdown>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-4">{children}</main>
       </div>
     </div>
   );

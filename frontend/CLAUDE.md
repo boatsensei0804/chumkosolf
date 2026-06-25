@@ -60,25 +60,25 @@
 
 ## 4. พาเลตสี — ฟ้า-ขาวเป็นหลัก (บังคับ)
 
-ทิศทางจาก skill `ui-ux-pro-max` (Data-Dense Dashboard) ใช้โทนฟ้า-ขาว + slate เป็นหลักทั้งระบบ สีหลักที่กำหนด:
+ทิศทางจาก skill `ui-ux-pro-max` (Government/Public Service · Data-Dense) — navy + professional blue + slate, dark sidebar:
 
-| ชื่อ | HEX | ใช้กับ |
-|------|-----|--------|
-| Primary | `#2563EB` | สีหลัก (link, active state, ปุ่ม primary) |
-| Primary deep | `#1E40AF` | สีหลักเข้ม (ปลาย gradient, จุดเน้นสำคัญ) |
-| Primary bright | `#3B82F6` | สีหลักสว่าง (hover, secondary) |
-| Accent (green) | `#059669` | accent/CTA รอง, success เน้น |
-| Cyan accent | `#00D4EB` | สีตกแต่ง (decorative ใน hero) |
-| White | `#FFFFFF` | พื้นการ์ด/พื้นผิว |
+| ชื่อ | HEX | = Tailwind | ใช้กับ |
+|------|-----|-----------|--------|
+| Primary | `#0369A1` | sky-700 | สีหลัก (link, active, ปุ่ม primary) |
+| Primary deep | `#075985` | sky-800 | สีหลักเข้ม (hover, ปลาย gradient) |
+| Primary bright | `#0EA5E9` | sky-500 | highlight |
+| Navy | `#0F172A` | slate-900 | dark sidebar / พื้นผิวเข้ม |
+| White | `#FFFFFF` | — | พื้นการ์ด/พื้นผิว |
 
-> รสนิยม/ดีไซน์ทั้งหมดอ้างอิง `frontend/design-system/MASTER.md` (source of truth) ซึ่งยึด skill `ui-ux-pro-max` + `frontend-design`
+> รสนิยม/ดีไซน์ทั้งหมดอ้างอิง `frontend/design-system/MASTER.md` (source of truth) ซึ่งยึด skill `ui-ux-pro-max` + `frontend-design` — รวม accent color-coding ต่อหมวด (`src/shared/ui/accent.ts`)
 
 กฎการใช้สี:
-- กำหนดสีพวกนี้เป็น **design token กลาง** (Tailwind config + antd ConfigProvider) ห้าม hardcode ค่า hex กระจัดกระจายในแต่ละ component
-- ตั้ง antd `theme.token.colorPrimary = '#2563EB'` ผ่าน `ConfigProvider`
-- พื้นแอปใช้ `slate-50` (#f8fafc) + การ์ดขาว, ฟ้าเป็น accent/action ไม่ใช้ฟ้าทั้งหน้าจนล้า
-- รักษา contrast ให้อ่านง่าย (ข้อความบนพื้นฟ้าเข้มใช้ขาว, บนพื้นขาวใช้ slate-800/900) ตรวจ accessibility contrast ≥ 4.5:1
-- สี semantic/status (success `#059669` / warning amber / error `#DC2626`) ใช้กับ badge/แถวเพื่อ scan ง่าย
+- กำหนดสีเป็น **design token กลาง** (Tailwind config + antd ConfigProvider) ห้าม hardcode hex กระจายในแต่ละ component
+- ตั้ง antd `theme.token.colorPrimary = '#0369A1'` ผ่าน `ConfigProvider`
+- พื้นแอป `slate-50`, การ์ดขาว, **sidebar navy** เป็นจุดเด่น enterprise, ฟ้าเป็น accent/action
+- contrast: บนพื้น navy ใช้ขาว/slate-300, บนขาวใช้ slate-800/900 — ตรวจ ≥ 4.5:1
+- สี status (success `#059669` / warning amber / error `#DC2626`) ใช้กับ badge/แถว
+- ⚠️ แก้ custom color ใน `tailwind.config.ts` ต้อง **restart dev server** (HMR ไม่ reload config)
 
 ---
 

@@ -63,7 +63,7 @@ export default function EditPersonnelPage(): ReactNode {
   const fullName = data ? `${data.prefix}${data.first_name} ${data.last_name}`.trim() : "";
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <PageHeader
         title="แก้ไขข้อมูลบุคลากร"
         subtitle={fullName || "กำลังโหลด…"}
@@ -71,31 +71,41 @@ export default function EditPersonnelPage(): ReactNode {
         backLabel="กลับไปรายการบุคลากร"
       />
 
-      <SectionCard title="ข้อมูลบุคลากร">
-        {isLoading && (
-          <div className="flex justify-center py-10">
-            <Spin />
-          </div>
-        )}
-        {isError && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-            โหลดข้อมูลไม่สำเร็จ: {error?.message}
-          </div>
-        )}
-        {data && (
-          <PersonnelForm
-            mode="edit"
-            defaultValues={toFormValues(data)}
-            onSubmit={handleSubmit}
-            isSubmitting={updateMutation.isPending}
-            errorMessage={errorMessage}
-            submitLabel="บันทึกการแก้ไข"
-          />
-        )}
-      </SectionCard>
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+        {/* คอลัมน์หลัก: ฟอร์มข้อมูล */}
+        <div className="xl:col-span-2">
+          <SectionCard title="ข้อมูลบุคลากร">
+            {isLoading && (
+              <div className="flex justify-center py-10">
+                <Spin />
+              </div>
+            )}
+            {isError && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                โหลดข้อมูลไม่สำเร็จ: {error?.message}
+              </div>
+            )}
+            {data && (
+              <PersonnelForm
+                mode="edit"
+                defaultValues={toFormValues(data)}
+                onSubmit={handleSubmit}
+                isSubmitting={updateMutation.isPending}
+                errorMessage={errorMessage}
+                submitLabel="บันทึกการแก้ไข"
+              />
+            )}
+          </SectionCard>
+        </div>
 
-      {data && <WorkGroupsSection personnelId={id} />}
-      {data && <PersonnelSubResources personnelId={id} />}
+        {/* rail ขวา: สิทธิ์/ตำแหน่ง/วิทยฐานะ */}
+        {data && (
+          <div className="flex flex-col gap-5">
+            <WorkGroupsSection personnelId={id} />
+            <PersonnelSubResources personnelId={id} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

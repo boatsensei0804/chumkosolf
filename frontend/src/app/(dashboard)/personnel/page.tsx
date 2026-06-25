@@ -37,8 +37,8 @@ export default function PersonnelListPage(): ReactNode {
       title: "ชื่อ-นามสกุล",
       key: "name",
       render: (_, r) => (
-        <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-semibold text-brand">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
             {(r.first_name.charAt(0) || "?").toUpperCase()}
           </span>
           <div className="leading-tight">
@@ -113,7 +113,7 @@ export default function PersonnelListPage(): ReactNode {
   ];
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       {/* header ของหน้า */}
       <div className="flex items-end justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -142,6 +142,7 @@ export default function PersonnelListPage(): ReactNode {
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           <Table<PersonnelListItem>
             rowKey="id"
+            size="middle"
             columns={columns}
             dataSource={data?.items ?? []}
             loading={isLoading}

@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 
+import { ACCENTS, type Accent } from "./accent";
+
 // SectionCard — การ์ดมาตรฐาน (ตาม design-system/MASTER §6)
-// header: ไอคอนกรอบฟ้า + title + description + extra ฝั่งขวา; body มี padding
+// header: ไอคอน chip สี accent + title + description + extra; body มี padding
 export function SectionCard({
   icon,
   title,
@@ -9,6 +11,7 @@ export function SectionCard({
   extra,
   children,
   className,
+  accent = "blue",
 }: {
   icon?: ReactNode;
   title: string;
@@ -16,22 +19,25 @@ export function SectionCard({
   extra?: ReactNode;
   children: ReactNode;
   className?: string;
+  accent?: Accent;
 }): ReactNode {
   return (
-    <section className={`rounded-2xl border border-slate-200 bg-white ${className ?? ""}`}>
-      <header className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+    <section className={`rounded-xl border border-slate-200 bg-white ${className ?? ""}`}>
+      <header className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3">
         {icon && (
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">
+          <span
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${ACCENTS[accent].chip}`}
+          >
             {icon}
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold text-slate-800">{title}</h2>
+          <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
           {description && <p className="truncate text-xs text-slate-400">{description}</p>}
         </div>
         {extra}
       </header>
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </section>
   );
 }

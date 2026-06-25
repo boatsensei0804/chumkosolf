@@ -32,9 +32,9 @@ export default function LoginPage(): ReactNode {
   return (
     <main className="flex min-h-dvh bg-slate-50">
       {/* แผงซ้าย — แบรนด์ gradient ฟ้า (signature เดียวกับ dashboard) ซ่อนบนจอเล็ก */}
-      <aside className="relative hidden w-[44%] overflow-hidden bg-gradient-to-br from-brand to-brand-deep p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <aside className="bg-brand-gradient relative hidden w-[44%] overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10" />
-        <div className="pointer-events-none absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-brand-cyan/15" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-brand-bright/20" />
 
         <div className="relative flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 ring-1 ring-inset ring-white/25">

@@ -98,13 +98,13 @@ export function PersonnelForm({
   const isCreate = mode === "create";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
       {errorMessage && <Alert type="error" showIcon message={errorMessage} role="alert" />}
 
       {isCreate && (
         <section>
           <h2 className="mb-4 border-l-[3px] border-brand pl-2.5 text-sm font-semibold uppercase tracking-wide text-slate-500">บัญชีผู้ใช้</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
             <TextField
               control={control}
               name="username"
@@ -149,7 +149,7 @@ export function PersonnelForm({
 
       <section>
         <h2 className="mb-4 border-l-[3px] border-brand pl-2.5 text-sm font-semibold uppercase tracking-wide text-slate-500">ข้อมูลส่วนตัว</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
           <TextField control={control} name="prefix" label="คำนำหน้า" error={errors.prefix?.message} placeholder="เช่น นาย/นาง/นางสาว" />
           <div className="hidden sm:block" />
           <TextField control={control} name="firstName" label="ชื่อ" required error={errors.firstName?.message} />
@@ -186,7 +186,7 @@ export function PersonnelForm({
 
       <section>
         <h2 className="mb-4 border-l-[3px] border-brand pl-2.5 text-sm font-semibold uppercase tracking-wide text-slate-500">ที่อยู่</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
           <TextField control={control} name="address.houseNo" label="บ้านเลขที่" error={errors.address?.houseNo?.message} />
           <TextField control={control} name="address.moo" label="หมู่" error={errors.address?.moo?.message} />
           <TextField control={control} name="address.road" label="ถนน" error={errors.address?.road?.message} />

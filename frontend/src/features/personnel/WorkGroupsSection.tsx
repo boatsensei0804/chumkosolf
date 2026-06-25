@@ -81,6 +81,7 @@ export function WorkGroupsSection({ personnelId }: { personnelId: string }): Rea
       icon={<ApartmentOutlined />}
       title="กลุ่มงานที่สังกัด"
       description="กำหนดสิทธิ์การเข้าถึงเมนูตามกลุ่มงาน"
+      accent="emerald"
     >
       {isLoading ? (
         <Spin />

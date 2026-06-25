@@ -35,10 +35,12 @@ const personnelKeys = {
 export function usePersonnelList(
   page: number,
   pageSize: number,
+  enabled = true,
 ): UseQueryResult<PersonnelListResult, ApiRequestError> {
   return useQuery({
     queryKey: personnelKeys.list(page, pageSize),
     queryFn: () => listPersonnel(page, pageSize),
+    enabled,
   });
 }
 
