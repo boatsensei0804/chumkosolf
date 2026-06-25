@@ -56,8 +56,42 @@ func New(deps Deps) *fiber.App {
 	v1 := app.Group("/api/v1")
 	registerAuth(v1, deps, tokens)
 	registerPersonnel(v1, deps, tokens)
+	registerStudents(v1, deps, tokens)
 
 	return app
+}
+
+// registerStudents mount route นักเรียน/ผู้ปกครอง (กลุ่มวิชาการ) — RequireAuth ทุก route
+func registerStudents(router fiber.Router, deps Deps, tokens *auth.TokenManager) {
+	wgRepo := repository.NewWorkGroupRepository(deps.DB) // ใช้ตรวจสิทธิ์กลุ่มวิชาการ
+	studentRepo := repository.NewStudentRepository(deps.DB)
+	guardianRepo := repository.NewGuardianRepository(deps.DB)
+	linkRepo := repository.NewStudentGuardianRepository(deps.DB)
+
+	sH := handler.NewStudentHandler(service.NewStudentService(studentRepo, wgRepo, deps.Cipher))
+	gH := handler.NewGuardianHandler(service.NewGuardianService(guardianRepo, wgRepo, deps.Cipher))
+	sgH := handler.NewStudentGuardianHandler(
+		service.NewStudentGuardianService(linkRepo, studentRepo, guardianRepo, wgRepo, deps.Cipher))
+
+	authMW := middleware.RequireAuth(tokens)
+
+	sg := router.Group("/students", authMW)
+	sg.Get("/", sH.List)
+	sg.Post("/", sH.Create)
+	sg.Get("/:id", sH.Get)
+	sg.Put("/:id", sH.Update)
+	sg.Delete("/:id", sH.Delete)
+	// ผู้ปกครองของนักเรียน
+	sg.Get("/:id/guardians", sgH.List)
+	sg.Post("/:id/guardians", sgH.Link)
+	sg.Delete("/:id/guardians/:linkId", sgH.Unlink)
+
+	gg := router.Group("/guardians", authMW)
+	gg.Get("/", gH.List)
+	gg.Post("/", gH.Create)
+	gg.Get("/:id", gH.Get)
+	gg.Put("/:id", gH.Update)
+	gg.Delete("/:id", gH.Delete)
 }
 
 // registerAuth ประกอบ dependency ของกลุ่มงาน auth (repo → service → handler) แล้ว mount route

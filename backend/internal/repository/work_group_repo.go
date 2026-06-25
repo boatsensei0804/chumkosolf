@@ -74,6 +74,22 @@ func (r *WorkGroupRepository) ListForUser(ctx context.Context, schoolID, userID 
 	return out, rows.Err()
 }
 
+// IsUserInWorkGroup ตรวจว่า user สังกัดกลุ่มงานรหัสที่ระบุไหม (scope school_id)
+func (r *WorkGroupRepository) IsUserInWorkGroup(ctx context.Context, schoolID, userID, code string) (bool, error) {
+	const q = `
+		SELECT EXISTS (
+			SELECT 1 FROM user_work_groups uwg
+			JOIN work_groups wg ON wg.id = uwg.work_group_id
+			WHERE uwg.school_id = $1 AND uwg.user_id = $2 AND wg.code = $3
+			  AND uwg.deleted_at IS NULL AND wg.deleted_at IS NULL
+		)`
+	var ok bool
+	if err := r.db.QueryRow(ctx, q, schoolID, userID, code).Scan(&ok); err != nil {
+		return false, fmt.Errorf("repository: is user in work group: %w", err)
+	}
+	return ok, nil
+}
+
 // IsGroupAdmin ตรวจว่า user เป็นหัวหน้ากลุ่มงานนี้ไหม
 func (r *WorkGroupRepository) IsGroupAdmin(ctx context.Context, schoolID, userID, workGroupID string) (bool, error) {
 	const q = `

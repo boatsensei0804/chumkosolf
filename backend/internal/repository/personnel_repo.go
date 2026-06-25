@@ -303,9 +303,13 @@ func mapUniqueViolation(err error) error {
 			return domain.ErrDuplicateNationalID
 		case strings.Contains(pgErr.ConstraintName, "username"):
 			return domain.ErrDuplicateUsername
+		case strings.Contains(pgErr.ConstraintName, "student_code"):
+			return domain.ErrDuplicateStudentCode
+		case strings.Contains(pgErr.ConstraintName, "student_id_guardian_id"):
+			return domain.ErrDuplicateGuardianLink
 		}
 	}
-	return fmt.Errorf("repository: write personnel: %w", err)
+	return fmt.Errorf("repository: write: %w", err)
 }
 
 func nilIfEmpty(s string) any {

@@ -96,3 +96,37 @@ var (
 		Message: "บุคลากรไม่ได้สังกัดกลุ่มงานนี้",
 	}
 )
+
+// Students / guardians errors
+var (
+	ErrStudentNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "STUDENT_NOT_FOUND",
+		Message: "ไม่พบข้อมูลนักเรียน",
+	}
+	ErrGuardianNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "GUARDIAN_NOT_FOUND",
+		Message: "ไม่พบข้อมูลผู้ปกครอง",
+	}
+	ErrDuplicateStudentCode = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_STUDENT_CODE",
+		Message: "รหัสนักเรียนนี้มีอยู่ในระบบแล้ว",
+	}
+	ErrDuplicateGuardianLink = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_GUARDIAN_LINK",
+		Message: "ผู้ปกครองคนนี้ถูกเชื่อมกับนักเรียนแล้ว",
+	}
+	ErrGuardianLinkNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "GUARDIAN_LINK_NOT_FOUND",
+		Message: "ไม่พบความเชื่อมโยงผู้ปกครองนี้",
+	}
+	ErrInvalidRelationship = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_RELATIONSHIP",
+		Message: "ความสัมพันธ์ต้องเป็น บิดา/มารดา/อื่น ๆ",
+	}
+)

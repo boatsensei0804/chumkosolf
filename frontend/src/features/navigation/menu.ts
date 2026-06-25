@@ -38,7 +38,7 @@ export const MENU_ITEMS: readonly MenuItemConfig[] = [
     label: "นักเรียนและผู้ปกครอง",
     path: "/students",
     requiredWorkGroup: "academic",
-    available: false,
+    available: true,
   },
   {
     key: "attendance",

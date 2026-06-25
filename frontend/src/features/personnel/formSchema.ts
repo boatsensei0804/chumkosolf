@@ -17,7 +17,7 @@ const optionalEmail = z
     message: "อีเมลไม่ถูกต้อง",
   });
 
-const addressFormSchema = z.object({
+export const addressFormSchema = z.object({
   houseNo: z.string(),
   moo: z.string(),
   road: z.string(),
