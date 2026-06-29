@@ -23,12 +23,9 @@ function token(): string {
 
 export type StudentListResult = { items: StudentListItem[]; total: number };
 
-export async function listStudents(page: number, pageSize: number): Promise<StudentListResult> {
-  const { data, meta } = await apiRequestWithMeta(
-    `/students?page=${page}&page_size=${pageSize}`,
-    studentListSchema,
-    { token: token() },
-  );
+export async function listStudents(page: number, pageSize: number, search = ""): Promise<StudentListResult> {
+  const qs = `page=${page}&page_size=${pageSize}${search ? `&q=${encodeURIComponent(search)}` : ""}`;
+  const { data, meta } = await apiRequestWithMeta(`/students?${qs}`, studentListSchema, { token: token() });
   return { items: data, total: meta?.total ?? data.length };
 }
 

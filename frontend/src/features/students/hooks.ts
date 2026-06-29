@@ -26,7 +26,7 @@ import {
 
 const keys = {
   all: ["students"] as const,
-  list: (p: number, s: number) => ["students", "list", p, s] as const,
+  list: (p: number, s: number, q: string) => ["students", "list", p, s, q] as const,
   detail: (id: string) => ["students", "detail", id] as const,
   guardians: (id: string) => ["students", id, "guardians"] as const,
 };
@@ -34,9 +34,10 @@ const keys = {
 export function useStudentList(
   page: number,
   pageSize: number,
+  search = "",
   enabled = true,
 ): UseQueryResult<StudentListResult, ApiRequestError> {
-  return useQuery({ queryKey: keys.list(page, pageSize), queryFn: () => listStudents(page, pageSize), enabled });
+  return useQuery({ queryKey: keys.list(page, pageSize, search), queryFn: () => listStudents(page, pageSize, search), enabled });
 }
 
 export function useStudent(id: string): UseQueryResult<StudentDetail, ApiRequestError> {

@@ -7,6 +7,7 @@ import { useState, type ReactNode } from "react";
 import { PersonnelForm } from "@/features/personnel/PersonnelForm";
 import { PersonnelSubResources } from "@/features/personnel/PersonnelSubResources";
 import { WorkGroupsSection } from "@/features/personnel/WorkGroupsSection";
+import { WorksSection } from "@/features/personnel/WorksSection";
 import { toUpdateBody, type CreatePersonnelFormValues } from "@/features/personnel/formSchema";
 import { usePersonnel, useUpdatePersonnel } from "@/features/personnel/hooks";
 import type { PersonnelDetail } from "@/shared/schemas/personnel";
@@ -103,6 +104,7 @@ export default function EditPersonnelPage(): ReactNode {
           <div className="flex flex-col gap-5">
             <WorkGroupsSection personnelId={id} />
             <PersonnelSubResources personnelId={id} />
+            <WorksSection personnelId={id} />
           </div>
         )}
       </div>

@@ -1,13 +1,17 @@
 "use client";
 
 import {
+  ApartmentOutlined,
   AppstoreOutlined,
   DollarOutlined,
   DownOutlined,
   HomeOutlined,
+  IdcardOutlined,
+  LockOutlined,
   LogoutOutlined,
   MenuOutlined,
   ReadOutlined,
+  ScanOutlined,
   ScheduleOutlined,
   SettingOutlined,
   TeamOutlined,
@@ -19,14 +23,43 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { useAuth } from "@/features/auth/AuthContext";
+import { TermSwitcher } from "@/features/term/TermSwitcher";
 import { userRoleSchema, type UserRole } from "@/shared/schemas/enums";
 
-import { menuItemsForUser, type MenuItemConfig } from "./menu";
+import { canAccessPath, menuItemsForUser, type MenuItemConfig } from "./menu";
+
+// AccessDenied — แสดงเมื่อผู้ใช้เปิดหน้าที่ไม่มีสิทธิ์ (กันการเข้าตรง ๆ ทาง URL)
+// ไม่ render หน้าปลายทาง → หน้าไม่ mount และไม่ยิง API
+function AccessDenied({ onBack }: { onBack: () => void }): ReactNode {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl text-slate-400">
+        <LockOutlined />
+      </span>
+      <h2 className="mt-4 text-lg font-bold text-slate-800">ไม่มีสิทธิ์เข้าถึงหน้านี้</h2>
+      <p className="mt-1 max-w-sm text-sm text-slate-500">
+        หน้านี้จำกัดเฉพาะกลุ่มงานหรือผู้ดูแลที่เกี่ยวข้อง หากต้องการสิทธิ์ โปรดติดต่อผู้ดูแลระบบ
+      </p>
+      <button
+        type="button"
+        onClick={onBack}
+        className="mt-5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-deep"
+      >
+        กลับหน้าแรก
+      </button>
+    </div>
+  );
+}
 
 const MENU_ICONS: Record<string, ReactNode> = {
   home: <HomeOutlined />,
+  my_advisees: <TeamOutlined />,
+  my_profile: <UserOutlined />,
+  people: <IdcardOutlined />,
   personnel: <TeamOutlined />,
   students: <UserOutlined />,
+  classes: <ApartmentOutlined />,
+  kiosk: <ScanOutlined />,
   attendance: <ScheduleOutlined />,
   budget: <DollarOutlined />,
   settings: <SettingOutlined />,
@@ -35,8 +68,13 @@ const MENU_ICONS: Record<string, ReactNode> = {
 // สีไอคอนเมนูต่อหมวด (บนพื้น navy ใช้เฉดสว่าง) ให้เด่น/จำง่าย
 const NAV_ICON_COLOR: Record<string, string> = {
   home: "text-sky-400",
+  my_advisees: "text-emerald-400",
+  my_profile: "text-sky-400",
+  people: "text-sky-400",
   personnel: "text-sky-400",
   students: "text-emerald-400",
+  classes: "text-violet-400",
+  kiosk: "text-rose-400",
   attendance: "text-violet-400",
   budget: "text-amber-400",
   settings: "text-slate-400",
@@ -47,6 +85,7 @@ const ROLE_LABEL: Record<UserRole, string> = {
   teacher: "ครู",
   executive: "ผู้บริหาร",
   student: "นักเรียน",
+  kiosk: "เครื่องสแกนหน้า",
 };
 
 // แบรนด์มาร์กบนพื้น navy (sidebar)
@@ -130,6 +169,11 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const items = useMemo(() => (user ? menuItemsForUser(user) : []), [user]);
+  // sidebar แสดงเฉพาะเมนูหลัก — เมนูส่วนตัว (inAccountMenu) ไปอยู่ใต้ไอคอนบัญชี
+  const sidebarItems = useMemo(() => items.filter((i) => !i.inAccountMenu), [items]);
+
+  // กันการเปิดหน้าที่ไม่มีสิทธิ์ตรง ๆ ทาง URL (กฎเดียวกับการมองเห็นเมนู)
+  const allowed = user ? canAccessPath(user, pathname) : true;
 
   const activeKey = useMemo(() => {
     const match = items.find(
@@ -138,7 +182,9 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
     return match?.key ?? "home";
   }, [items, pathname]);
 
-  const pageTitle = items.find((i) => i.key === activeKey)?.label ?? "หน้าแรก";
+  const pageTitle = !allowed
+    ? "ไม่มีสิทธิ์เข้าถึง"
+    : (items.find((i) => i.key === activeKey)?.label ?? "หน้าแรก");
 
   const handleNavigate = (item: MenuItemConfig): void => {
     router.push(item.path);
@@ -150,7 +196,16 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
     message.success("ออกจากระบบแล้ว");
   };
 
+  // เมนูใต้ไอคอนบัญชี: หน้าส่วนตัว (เช่น ข้อมูลของฉัน) ก่อน แล้วตามด้วยออกจากระบบ
+  const accountItems = items.filter((i) => i.inAccountMenu);
   const userMenu: MenuProps["items"] = [
+    ...accountItems.map((i) => ({
+      key: i.key,
+      icon: MENU_ICONS[i.key] ?? <UserOutlined />,
+      label: i.label,
+      onClick: () => router.push(i.path),
+    })),
+    ...(accountItems.length > 0 ? [{ type: "divider" as const }] : []),
     { key: "logout", icon: <LogoutOutlined />, label: "ออกจากระบบ", danger: true, onClick: handleSignOut },
   ];
 
@@ -165,7 +220,7 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
         <BrandMark />
       </div>
       <div className="flex-1 overflow-y-auto">
-        <NavList items={items} activeKey={activeKey} onNavigate={handleNavigate} />
+        <NavList items={sidebarItems} activeKey={activeKey} onNavigate={handleNavigate} />
       </div>
     </div>
   );
@@ -202,7 +257,9 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
             <span className="num hidden text-xs text-slate-400 sm:inline">· {today}</span>
           </div>
 
-          <Dropdown menu={{ items: userMenu }} trigger={["click"]} placement="bottomRight">
+          <div className="flex items-center gap-3">
+            <TermSwitcher />
+            <Dropdown menu={{ items: userMenu }} trigger={["click"]} placement="bottomRight">
             <button
               type="button"
               aria-label="เมนูผู้ใช้"
@@ -217,10 +274,13 @@ export function DashboardLayout({ children }: { children: ReactNode }): ReactNod
               </span>
               <DownOutlined className="hidden text-[10px] text-slate-400 sm:inline" />
             </button>
-          </Dropdown>
+            </Dropdown>
+          </div>
         </header>
 
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4">
+          {allowed ? children : <AccessDenied onBack={() => router.push("/")} />}
+        </main>
       </div>
     </div>
   );

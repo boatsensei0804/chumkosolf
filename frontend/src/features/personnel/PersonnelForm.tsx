@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button, DatePicker, Input, Select } from "antd";
 import dayjs from "dayjs";
-import { Controller, useForm, type Control, type FieldPath, type Resolver } from "react-hook-form";
+import { Controller, useForm, useWatch, type Control, type FieldPath, type Resolver } from "react-hook-form";
+
+import { AddressCascade } from "@/shared/ui/AddressCascade";
 import type { ReactNode } from "react";
 
 import { personnelRoleLabel } from "@/shared/schemas/personnel";
@@ -92,8 +94,11 @@ export function PersonnelForm({
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CreatePersonnelFormValues>({ resolver, defaultValues });
+
+  const addr = useWatch({ control, name: "address" });
 
   const isCreate = mode === "create";
 
@@ -190,10 +195,20 @@ export function PersonnelForm({
           <TextField control={control} name="address.houseNo" label="บ้านเลขที่" error={errors.address?.houseNo?.message} />
           <TextField control={control} name="address.moo" label="หมู่" error={errors.address?.moo?.message} />
           <TextField control={control} name="address.road" label="ถนน" error={errors.address?.road?.message} />
-          <TextField control={control} name="address.subdistrict" label="ตำบล/แขวง" error={errors.address?.subdistrict?.message} />
-          <TextField control={control} name="address.district" label="อำเภอ/เขต" error={errors.address?.district?.message} />
-          <TextField control={control} name="address.province" label="จังหวัด" error={errors.address?.province?.message} />
-          <TextField control={control} name="address.postalCode" label="รหัสไปรษณีย์" maxLength={10} error={errors.address?.postalCode?.message} />
+          <AddressCascade
+            value={{
+              province: addr?.province ?? "",
+              district: addr?.district ?? "",
+              subdistrict: addr?.subdistrict ?? "",
+              postalCode: addr?.postalCode ?? "",
+            }}
+            onChange={(g) => {
+              setValue("address.province", g.province, { shouldValidate: true });
+              setValue("address.district", g.district, { shouldValidate: true });
+              setValue("address.subdistrict", g.subdistrict, { shouldValidate: true });
+              setValue("address.postalCode", g.postalCode, { shouldValidate: true });
+            }}
+          />
         </div>
       </section>
 

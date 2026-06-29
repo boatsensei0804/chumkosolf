@@ -14,7 +14,7 @@ import (
 // ================= Students =================
 
 type StudentService interface {
-	List(ctx context.Context, page, pageSize int) ([]service.StudentListItem, int, error)
+	List(ctx context.Context, page, pageSize int, search string) ([]service.StudentListItem, int, error)
 	Get(ctx context.Context, id string) (*service.StudentDetail, error)
 	Create(ctx context.Context, in service.CreateStudentInput) (string, error)
 	Update(ctx context.Context, id string, in service.UpdateStudentInput) error
@@ -33,6 +33,7 @@ func NewStudentHandler(svc StudentService) *StudentHandler {
 type createStudentBody struct {
 	NationalID  string      `json:"national_id" validate:"required,len=13,numeric"`
 	StudentCode string      `json:"student_code" validate:"required,max=50"`
+	Status      string      `json:"status" validate:"omitempty,oneof=studying resigned suspended"`
 	Prefix      string      `json:"prefix" validate:"omitempty,max=50"`
 	FirstName   string      `json:"first_name" validate:"required,max=150"`
 	LastName    string      `json:"last_name" validate:"required,max=150"`
@@ -44,6 +45,7 @@ type createStudentBody struct {
 type updateStudentBody struct {
 	NationalID  string      `json:"national_id" validate:"omitempty,len=13,numeric"`
 	StudentCode string      `json:"student_code" validate:"required,max=50"`
+	Status      string      `json:"status" validate:"omitempty,oneof=studying resigned suspended"`
 	Prefix      string      `json:"prefix" validate:"omitempty,max=50"`
 	FirstName   string      `json:"first_name" validate:"required,max=150"`
 	LastName    string      `json:"last_name" validate:"required,max=150"`
@@ -55,7 +57,7 @@ type updateStudentBody struct {
 func (h *StudentHandler) List(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size", "20"))
-	items, total, err := h.svc.List(c.UserContext(), page, pageSize)
+	items, total, err := h.svc.List(c.UserContext(), page, pageSize, c.Query("q"))
 	if err != nil {
 		return respondServiceError(c, err)
 	}
@@ -83,7 +85,7 @@ func (h *StudentHandler) Create(c *fiber.Ctx) error {
 		return httputil.Error(c, fiber.StatusBadRequest, "INVALID_INPUT", "รูปแบบวันเกิดไม่ถูกต้อง (YYYY-MM-DD)")
 	}
 	id, err := h.svc.Create(c.UserContext(), service.CreateStudentInput{
-		NationalID: body.NationalID, StudentCode: body.StudentCode, Prefix: body.Prefix,
+		NationalID: body.NationalID, StudentCode: body.StudentCode, Status: body.Status, Prefix: body.Prefix,
 		FirstName: body.FirstName, LastName: body.LastName, BirthDate: birth, Phone: body.Phone,
 		Address: body.Address.toDTO(),
 	})
@@ -106,7 +108,7 @@ func (h *StudentHandler) Update(c *fiber.Ctx) error {
 		return httputil.Error(c, fiber.StatusBadRequest, "INVALID_INPUT", "รูปแบบวันเกิดไม่ถูกต้อง (YYYY-MM-DD)")
 	}
 	if err := h.svc.Update(c.UserContext(), c.Params("id"), service.UpdateStudentInput{
-		NationalID: body.NationalID, StudentCode: body.StudentCode, Prefix: body.Prefix,
+		NationalID: body.NationalID, StudentCode: body.StudentCode, Status: body.Status, Prefix: body.Prefix,
 		FirstName: body.FirstName, LastName: body.LastName, BirthDate: birth, Phone: body.Phone,
 		Address: body.Address.toDTO(),
 	}); err != nil {

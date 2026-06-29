@@ -130,3 +130,218 @@ var (
 		Message: "ความสัมพันธ์ต้องเป็น บิดา/มารดา/อื่น ๆ",
 	}
 )
+
+// Classes / advisors / enrollments errors
+var (
+	ErrNoActiveSemester = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "NO_ACTIVE_SEMESTER",
+		Message: "ยังไม่ได้กำหนดเทอมปัจจุบัน กรุณาเข้าสู่ระบบใหม่หรือตั้งค่าเทอม",
+	}
+	ErrClassNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "CLASS_NOT_FOUND",
+		Message: "ไม่พบห้องเรียน",
+	}
+	ErrDuplicateClass = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_CLASS",
+		Message: "มีห้องเรียนระดับชั้น/ห้องนี้ในเทอมนี้แล้ว",
+	}
+	ErrAdvisorNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "ADVISOR_NOT_FOUND",
+		Message: "ไม่พบครูที่ปรึกษานี้ในห้อง",
+	}
+	ErrEnrollmentNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "ENROLLMENT_NOT_FOUND",
+		Message: "ไม่พบนักเรียนในห้องนี้",
+	}
+)
+
+// Personnel works (ผลงานครู) + ไฟล์แนบ errors
+var (
+	ErrWorkNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "WORK_NOT_FOUND",
+		Message: "ไม่พบผลงาน",
+	}
+	ErrWorkFileNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "WORK_FILE_NOT_FOUND",
+		Message: "ไม่พบไฟล์แนบ",
+	}
+	ErrInvalidFileType = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_FILE_TYPE",
+		Message: "ประเภทไฟล์ต้องเป็น รูปภาพ/เอกสาร/เกียรติบัตร",
+	}
+	ErrFileTooLarge = &Error{
+		Status:  http.StatusRequestEntityTooLarge,
+		Code:    "FILE_TOO_LARGE",
+		Message: "ไฟล์มีขนาดใหญ่เกินกำหนด (สูงสุด 10 MB)",
+	}
+	ErrFileRequired = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "FILE_REQUIRED",
+		Message: "กรุณาเลือกไฟล์ที่จะอัปโหลด",
+	}
+	ErrStorageUnavailable = &Error{
+		Status:  http.StatusServiceUnavailable,
+		Code:    "STORAGE_UNAVAILABLE",
+		Message: "ระบบจัดเก็บไฟล์ยังไม่พร้อมใช้งาน",
+	}
+	ErrInvalidImageType = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_IMAGE_TYPE",
+		Message: "รูปภาพต้องเป็นไฟล์ JPG, PNG หรือ WEBP",
+	}
+	ErrStudentPhotoNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "STUDENT_PHOTO_NOT_FOUND",
+		Message: "ไม่พบรูปนักเรียนนี้",
+	}
+	ErrPhotoLimitReached = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "PHOTO_LIMIT_REACHED",
+		Message: "เก็บรูปได้สูงสุด 10 รูปต่อนักเรียน",
+	}
+	ErrFaceServiceUnavailable = &Error{
+		Status:  http.StatusServiceUnavailable,
+		Code:    "FACE_SERVICE_UNAVAILABLE",
+		Message: "ระบบสแกนหน้ายังไม่พร้อมใช้งาน",
+	}
+	ErrNoFaceDetected = &Error{
+		Status:  http.StatusUnprocessableEntity,
+		Code:    "NO_FACE_DETECTED",
+		Message: "ไม่พบใบหน้าในรูป",
+	}
+)
+
+// เช็คชื่อเข้าเรียน (attendances) + คะแนนความประพฤติ (behavior_records) errors
+var (
+	ErrInvalidAttendanceStatus = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_ATTENDANCE_STATUS",
+		Message: "สถานะการเช็คชื่อไม่ถูกต้อง",
+	}
+	ErrInvalidDate = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_DATE",
+		Message: "กรุณาระบุวันที่ให้ถูกต้อง",
+	}
+	ErrStudentNotInClass = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "STUDENT_NOT_IN_CLASS",
+		Message: "มีนักเรียนที่ไม่ได้อยู่ในห้องนี้",
+	}
+	ErrInvalidPoints = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_POINTS",
+		Message: "คะแนนต้องไม่เป็นศูนย์ (ระบุเป็นบวกเพื่อเพิ่ม หรือลบเพื่อหัก)",
+	}
+	ErrReasonRequired = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "REASON_REQUIRED",
+		Message: "กรุณาระบุเหตุผล",
+	}
+	ErrBehaviorNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "BEHAVIOR_NOT_FOUND",
+		Message: "ไม่พบรายการคะแนนความประพฤติ",
+	}
+)
+
+// ตารางสอน (Phase 3) errors
+var (
+	ErrSubjectNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "SUBJECT_NOT_FOUND",
+		Message: "ไม่พบรายวิชา",
+	}
+	ErrDuplicateSubjectCode = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_SUBJECT_CODE",
+		Message: "รหัสวิชานี้มีอยู่ในระบบแล้ว",
+	}
+	ErrTeachingAssignmentNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "TEACHING_ASSIGNMENT_NOT_FOUND",
+		Message: "ไม่พบการมอบหมายการสอน",
+	}
+	ErrDuplicateTeachingAssignment = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_TEACHING_ASSIGNMENT",
+		Message: "มีการมอบหมายการสอนนี้อยู่แล้ว (ครู/วิชา/ห้องซ้ำ)",
+	}
+	ErrTimetableSettingsNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "TIMETABLE_SETTINGS_NOT_FOUND",
+		Message: "ยังไม่ได้ตั้งค่าตารางสอนของเทอมนี้",
+	}
+	ErrPeriodNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "PERIOD_NOT_FOUND",
+		Message: "ไม่พบคาบเรียน",
+	}
+	ErrTimetableSlotNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "TIMETABLE_SLOT_NOT_FOUND",
+		Message: "ไม่พบช่องตารางสอนนี้",
+	}
+	ErrInvalidTimetableSlot = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_TIMETABLE_SLOT",
+		Message: "วัน/คาบของตารางสอนไม่ถูกต้อง",
+	}
+	ErrTeacherTimeConflict = &Error{
+		Status:  http.StatusConflict,
+		Code:    "TEACHER_TIME_CONFLICT",
+		Message: "ครูมีคาบสอนห้องอื่นในวันและคาบเดียวกันนี้แล้ว",
+	}
+	ErrSubjectAttendanceNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "SUBJECT_ATTENDANCE_NOT_FOUND",
+		Message: "ไม่พบการเช็คชื่อรายวิชา",
+	}
+)
+
+// ปีการศึกษา/ภาคเรียน (จัดการเทอม) errors
+var (
+	ErrYearNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "YEAR_NOT_FOUND",
+		Message: "ไม่พบปีการศึกษา",
+	}
+	ErrDuplicateYear = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_YEAR",
+		Message: "ปีการศึกษานี้มีอยู่แล้ว",
+	}
+	ErrInvalidYear = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_YEAR",
+		Message: "ปีการศึกษาไม่ถูกต้อง (ระบุเป็น พ.ศ.)",
+	}
+	ErrSemesterNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "SEMESTER_NOT_FOUND",
+		Message: "ไม่พบภาคเรียน",
+	}
+	ErrDuplicateSemester = &Error{
+		Status:  http.StatusConflict,
+		Code:    "DUPLICATE_SEMESTER",
+		Message: "ภาคเรียนนี้ของปีการศึกษานี้มีอยู่แล้ว",
+	}
+	ErrInvalidTerm = &Error{
+		Status:  http.StatusBadRequest,
+		Code:    "INVALID_TERM",
+		Message: "ภาคเรียนต้องเป็น 1 หรือ 2",
+	}
+	ErrSchoolNotFound = &Error{
+		Status:  http.StatusNotFound,
+		Code:    "SCHOOL_NOT_FOUND",
+		Message: "ไม่พบข้อมูลโรงเรียน",
+	}
+)

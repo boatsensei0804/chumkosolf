@@ -52,7 +52,7 @@ func (r *fakePersonnelRepo) Create(_ context.Context, schoolID string, np domain
 	return id, nil
 }
 
-func (r *fakePersonnelRepo) List(_ context.Context, schoolID string, limit, offset int) ([]domain.Personnel, int, error) {
+func (r *fakePersonnelRepo) List(_ context.Context, schoolID string, limit, offset int, _ string) ([]domain.Personnel, int, error) {
 	var all []domain.Personnel
 	for _, p := range r.byID {
 		if p.SchoolID == schoolID {

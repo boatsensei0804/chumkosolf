@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App, ConfigProvider } from "antd";
@@ -33,14 +34,17 @@ function makeUser(overrides: Partial<UserInfo> = {}): UserInfo {
 }
 
 function renderLayout(): void {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
-    <ConfigProvider>
-      <App>
-        <DashboardLayout>
-          <div>เนื้อหาหน้า</div>
-        </DashboardLayout>
-      </App>
-    </ConfigProvider>,
+    <QueryClientProvider client={queryClient}>
+      <ConfigProvider>
+        <App>
+          <DashboardLayout>
+            <div>เนื้อหาหน้า</div>
+          </DashboardLayout>
+        </App>
+      </ConfigProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -64,9 +68,7 @@ describe("DashboardLayout", () => {
     await user.click(screen.getByLabelText("เปิดเมนู"));
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).getByText("หน้าแรก")).toBeInTheDocument();
-    // เมนูที่ยังไม่เปิด: label + ป้าย "เร็ว ๆ นี้" แยกกัน
     expect(within(dialog).getByText("ตั้งค่าระบบ")).toBeInTheDocument();
-    expect(within(dialog).getAllByText("เร็ว ๆ นี้").length).toBeGreaterThan(0);
   });
 
   it("ครูทั่วไป (ไม่ใช่ school admin) ไม่เห็นเมนูตั้งค่าระบบ", async () => {
@@ -77,6 +79,22 @@ describe("DashboardLayout", () => {
     await user.click(screen.getByLabelText("เปิดเมนู"));
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).queryByText("ตั้งค่าระบบ")).not.toBeInTheDocument();
+  });
+
+  it("\"ข้อมูลของฉัน\" อยู่ใต้ไอคอนบัญชี ไม่อยู่ใน sidebar", async () => {
+    currentUser = makeUser({ role: "teacher", is_school_admin: false });
+    const user = userEvent.setup();
+    renderLayout();
+
+    // ไม่อยู่ใน sidebar (drawer)
+    await user.click(screen.getByLabelText("เปิดเมนู"));
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).queryByText("ข้อมูลของฉัน")).not.toBeInTheDocument();
+    expect(within(dialog).getByText("นักเรียนที่ปรึกษาของฉัน")).toBeInTheDocument();
+
+    // อยู่ในเมนูไอคอนบัญชี
+    await user.click(screen.getByLabelText("เมนูผู้ใช้"));
+    expect(await screen.findByText("ข้อมูลของฉัน")).toBeInTheDocument();
   });
 
   it("กดออกจากระบบ → เรียก signOut", async () => {

@@ -13,6 +13,7 @@ import (
 	"github.com/chumko-platform/backend/internal/crypto"
 	"github.com/chumko-platform/backend/internal/database"
 	"github.com/chumko-platform/backend/internal/server"
+	"github.com/chumko-platform/backend/internal/storage"
 )
 
 func main() {
@@ -42,7 +43,20 @@ func main() {
 		log.Fatalf("สร้าง cipher ไม่สำเร็จ (ตรวจ ENCRYPTION_KEY): %v", err)
 	}
 
-	app := server.New(server.Deps{DB: db, Redis: rdb, Config: cfg, Cipher: cipher})
+	// object storage สำหรับไฟล์แนบ — optional (ถ้าไม่ตั้งค่าจะใช้งานไฟล์แนบไม่ได้แต่ระบบยังขึ้นได้)
+	var fileStore storage.Storage
+	if cfg.Storage.Enabled() {
+		ms, err := storage.NewMinioStorage(ctx, cfg.Storage)
+		if err != nil {
+			log.Fatalf("เชื่อมต่อ object storage ไม่สำเร็จ: %v", err)
+		}
+		fileStore = ms
+		log.Printf("object storage พร้อมใช้งาน (bucket=%s)", cfg.Storage.Bucket)
+	} else {
+		log.Println("object storage ไม่ได้ตั้งค่า — ฟีเจอร์ไฟล์แนบจะใช้งานไม่ได้")
+	}
+
+	app := server.New(server.Deps{DB: db, Redis: rdb, Config: cfg, Cipher: cipher, Storage: fileStore})
 
 	// start server แบบ non-blocking เพื่อรองรับ graceful shutdown
 	go func() {

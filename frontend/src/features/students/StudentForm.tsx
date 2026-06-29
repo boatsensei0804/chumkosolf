@@ -1,10 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Button, DatePicker, Input } from "antd";
+import { Alert, Button, DatePicker, Input, Select } from "antd";
 import dayjs from "dayjs";
-import { Controller, useForm, type Control, type FieldPath, type Resolver } from "react-hook-form";
+import { Controller, useForm, useWatch, type Control, type FieldPath, type Resolver } from "react-hook-form";
 import type { ReactNode } from "react";
+
+import { useClassList } from "@/features/classes/hooks";
+import { studentStatusLabel, type StudentStatus } from "@/shared/schemas/student";
+import { AddressCascade } from "@/shared/ui/AddressCascade";
 
 import {
   createStudentFormSchema,
@@ -14,6 +18,11 @@ import {
 
 type Mode = "create" | "edit";
 type FieldName = Exclude<FieldPath<CreateStudentFormValues>, "address">;
+
+const statusOptions = (Object.keys(studentStatusLabel) as StudentStatus[]).map((s) => ({
+  value: s,
+  label: studentStatusLabel[s],
+}));
 
 function TextField(props: {
   control: Control<CreateStudentFormValues>;
@@ -65,8 +74,13 @@ export function StudentForm({
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CreateStudentFormValues>({ resolver, defaultValues });
+
+  const addr = useWatch({ control, name: "address" });
+  const { data: classes, isLoading: loadingClasses } = useClassList();
+  const classOptions = (classes ?? []).map((c) => ({ value: c.id, label: `${c.grade_level} ${c.room_name}` }));
 
   const isCreate = mode === "create";
 
@@ -109,6 +123,39 @@ export function StudentForm({
             />
           </div>
           <TextField control={control} name="phone" label="เบอร์โทร" maxLength={20} error={errors.phone?.message} />
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              สถานะ<span className="text-red-500"> *</span>
+            </label>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} className="w-full" options={statusOptions} aria-label="สถานะ" />
+              )}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">ห้องเรียน (เทอมปัจจุบัน)</label>
+            <Controller
+              name="classId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  className="w-full"
+                  showSearch
+                  allowClear
+                  loading={loadingClasses}
+                  placeholder="ยังไม่จัดห้อง"
+                  optionFilterProp="label"
+                  value={field.value || undefined}
+                  onChange={(v) => field.onChange(v ?? "")}
+                  options={classOptions}
+                  aria-label="ห้องเรียน"
+                />
+              )}
+            />
+          </div>
         </div>
       </section>
 
@@ -120,10 +167,20 @@ export function StudentForm({
           <TextField control={control} name="address.houseNo" label="บ้านเลขที่" error={errors.address?.houseNo?.message} />
           <TextField control={control} name="address.moo" label="หมู่" error={errors.address?.moo?.message} />
           <TextField control={control} name="address.road" label="ถนน" error={errors.address?.road?.message} />
-          <TextField control={control} name="address.subdistrict" label="ตำบล/แขวง" error={errors.address?.subdistrict?.message} />
-          <TextField control={control} name="address.district" label="อำเภอ/เขต" error={errors.address?.district?.message} />
-          <TextField control={control} name="address.province" label="จังหวัด" error={errors.address?.province?.message} />
-          <TextField control={control} name="address.postalCode" label="รหัสไปรษณีย์" maxLength={10} error={errors.address?.postalCode?.message} />
+          <AddressCascade
+            value={{
+              province: addr?.province ?? "",
+              district: addr?.district ?? "",
+              subdistrict: addr?.subdistrict ?? "",
+              postalCode: addr?.postalCode ?? "",
+            }}
+            onChange={(g) => {
+              setValue("address.province", g.province, { shouldValidate: true });
+              setValue("address.district", g.district, { shouldValidate: true });
+              setValue("address.subdistrict", g.subdistrict, { shouldValidate: true });
+              setValue("address.postalCode", g.postalCode, { shouldValidate: true });
+            }}
+          />
         </div>
       </section>
 

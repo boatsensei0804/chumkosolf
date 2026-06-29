@@ -23,6 +23,7 @@ export const userRoleSchema = z.enum([
   "teacher",
   "executive",
   "student",
+  "kiosk",
 ]);
 export type UserRole = z.infer<typeof userRoleSchema>;
 

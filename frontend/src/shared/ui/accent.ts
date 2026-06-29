@@ -21,8 +21,13 @@ export const ACCENTS: Record<Accent, AccentClasses> = {
 // สีประจำของแต่ละเมนู/หมวดงาน
 export const MODULE_ACCENT: Record<string, Accent> = {
   home: "blue",
+  my_advisees: "emerald",
+  my_profile: "blue",
+  people: "blue",
   personnel: "blue",
   students: "emerald",
+  classes: "violet",
+  kiosk: "rose",
   attendance: "violet",
   budget: "amber",
   settings: "slate",

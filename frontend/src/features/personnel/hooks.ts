@@ -28,18 +28,19 @@ import {
 
 const personnelKeys = {
   all: ["personnel"] as const,
-  list: (page: number, pageSize: number) => ["personnel", "list", page, pageSize] as const,
+  list: (page: number, pageSize: number, search: string) => ["personnel", "list", page, pageSize, search] as const,
   detail: (id: string) => ["personnel", "detail", id] as const,
 };
 
 export function usePersonnelList(
   page: number,
   pageSize: number,
+  search = "",
   enabled = true,
 ): UseQueryResult<PersonnelListResult, ApiRequestError> {
   return useQuery({
-    queryKey: personnelKeys.list(page, pageSize),
-    queryFn: () => listPersonnel(page, pageSize),
+    queryKey: personnelKeys.list(page, pageSize, search),
+    queryFn: () => listPersonnel(page, pageSize, search),
     enabled,
   });
 }

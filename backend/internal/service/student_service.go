@@ -77,8 +77,9 @@ func addressDTO(a domain.Address) AddressDTO {
 // ================= Students =================
 
 type StudentRepository interface {
-	List(ctx context.Context, schoolID string, limit, offset int) ([]domain.Student, int, error)
+	List(ctx context.Context, schoolID string, limit, offset int, search string) ([]domain.Student, int, error)
 	GetByID(ctx context.Context, schoolID, id string) (*domain.Student, error)
+	CurrentClass(ctx context.Context, schoolID, semesterID, studentID string) (enrollmentID, classID, label string, err error)
 	Create(ctx context.Context, schoolID string, ns domain.NewStudent, audit domain.AuditEntry) (string, error)
 	Update(ctx context.Context, schoolID, id string, us domain.UpdateStudent, audit domain.AuditEntry) (bool, error)
 	SoftDelete(ctx context.Context, schoolID, id string, audit domain.AuditEntry) (bool, error)
@@ -87,6 +88,7 @@ type StudentRepository interface {
 type StudentListItem struct {
 	ID               string `json:"id"`
 	StudentCode      string `json:"student_code"`
+	Status           string `json:"status"`
 	Prefix           string `json:"prefix"`
 	FirstName        string `json:"first_name"`
 	LastName         string `json:"last_name"`
@@ -98,6 +100,7 @@ type StudentListItem struct {
 type StudentDetail struct {
 	ID               string     `json:"id"`
 	StudentCode      string     `json:"student_code"`
+	Status           string     `json:"status"`
 	Prefix           string     `json:"prefix"`
 	FirstName        string     `json:"first_name"`
 	LastName         string     `json:"last_name"`
@@ -106,13 +109,18 @@ type StudentDetail struct {
 	Phone            string     `json:"phone"`
 	Address          AddressDTO `json:"address"`
 	PhotoPath        string     `json:"photo_path"`
-	CreatedAt        string     `json:"created_at"`
-	UpdatedAt        string     `json:"updated_at"`
+	// ห้องเรียนของเทอมปัจจุบัน (ว่างถ้ายังไม่จัดห้อง)
+	CurrentClassID     string `json:"current_class_id"`
+	CurrentClassLabel  string `json:"current_class_label"`
+	CurrentEnrollmentID string `json:"current_enrollment_id"`
+	CreatedAt          string `json:"created_at"`
+	UpdatedAt          string `json:"updated_at"`
 }
 
 type CreateStudentInput struct {
 	NationalID  string
 	StudentCode string
+	Status      string
 	Prefix      string
 	FirstName   string
 	LastName    string
@@ -124,12 +132,24 @@ type CreateStudentInput struct {
 type UpdateStudentInput struct {
 	NationalID  string
 	StudentCode string
+	Status      string
 	Prefix      string
 	FirstName   string
 	LastName    string
 	BirthDate   *time.Time
 	Phone       string
 	Address     AddressDTO
+}
+
+// normalizeStatus คืนสถานะที่ถูกต้อง (ว่าง = กำลังศึกษา); "" ถ้าไม่ถูกต้อง
+func normalizeStatus(status string) string {
+	if status == "" {
+		return domain.StudentStatusStudying
+	}
+	if !domain.ValidStudentStatus(status) {
+		return ""
+	}
+	return status
 }
 
 type StudentService struct {
@@ -142,7 +162,7 @@ func NewStudentService(repo StudentRepository, checker WorkGroupChecker, cipher 
 	return &StudentService{guard: academicGuard{checker: checker}, repo: repo, cipher: cipher}
 }
 
-func (s *StudentService) List(ctx context.Context, page, pageSize int) ([]StudentListItem, int, error) {
+func (s *StudentService) List(ctx context.Context, page, pageSize int, search string) ([]StudentListItem, int, error) {
 	if err := s.guard.authorize(ctx); err != nil {
 		return nil, 0, err
 	}
@@ -152,7 +172,7 @@ func (s *StudentService) List(ctx context.Context, page, pageSize int) ([]Studen
 	if pageSize < 1 || pageSize > 100 {
 		pageSize = 20
 	}
-	rows, total, err := s.repo.List(ctx, tenant.SchoolIDFromContext(ctx), pageSize, (page-1)*pageSize)
+	rows, total, err := s.repo.List(ctx, tenant.SchoolIDFromContext(ctx), pageSize, (page-1)*pageSize, search)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -160,7 +180,7 @@ func (s *StudentService) List(ctx context.Context, page, pageSize int) ([]Studen
 	for i := range rows {
 		st := &rows[i]
 		items = append(items, StudentListItem{
-			ID: st.ID, StudentCode: st.StudentCode, Prefix: st.Profile.Prefix,
+			ID: st.ID, StudentCode: st.StudentCode, Status: st.Status, Prefix: st.Profile.Prefix,
 			FirstName: st.Profile.FirstName, LastName: st.Profile.LastName,
 			NationalIDMasked: maskNID(s.cipher, st.NationalIDEnc), Phone: st.Profile.Phone,
 			CreatedAt: st.CreatedAt.Format(time.RFC3339),
@@ -184,11 +204,20 @@ func (s *StudentService) Get(ctx context.Context, id string) (*StudentDetail, er
 	if st.Profile.BirthDate != nil {
 		birth = st.Profile.BirthDate.Format("2006-01-02")
 	}
+	// ห้องของเทอมปัจจุบัน (ถ้ามี semester ใน context)
+	var enrollmentID, classID, classLabel string
+	if sem := tenant.SemesterIDFromContext(ctx); sem != "" {
+		enrollmentID, classID, classLabel, err = s.repo.CurrentClass(ctx, tenant.SchoolIDFromContext(ctx), sem, id)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return &StudentDetail{
-		ID: st.ID, StudentCode: st.StudentCode, Prefix: st.Profile.Prefix,
+		ID: st.ID, StudentCode: st.StudentCode, Status: st.Status, Prefix: st.Profile.Prefix,
 		FirstName: st.Profile.FirstName, LastName: st.Profile.LastName,
 		NationalIDMasked: maskNID(s.cipher, st.NationalIDEnc), BirthDate: birth,
 		Phone: st.Profile.Phone, Address: addressDTO(st.Profile.Address), PhotoPath: st.PhotoPath,
+		CurrentClassID: classID, CurrentClassLabel: classLabel, CurrentEnrollmentID: enrollmentID,
 		CreatedAt: st.CreatedAt.Format(time.RFC3339), UpdatedAt: st.UpdatedAt.Format(time.RFC3339),
 	}, nil
 }
@@ -203,6 +232,10 @@ func (s *StudentService) Create(ctx context.Context, in CreateStudentInput) (str
 	if strings.TrimSpace(in.StudentCode) == "" || strings.TrimSpace(in.FirstName) == "" || strings.TrimSpace(in.LastName) == "" {
 		return "", domain.ErrValidation
 	}
+	status := normalizeStatus(in.Status)
+	if status == "" {
+		return "", domain.ErrValidation
+	}
 	enc, err := s.cipher.Encrypt(in.NationalID)
 	if err != nil {
 		return "", err
@@ -210,8 +243,8 @@ func (s *StudentService) Create(ctx context.Context, in CreateStudentInput) (str
 	audit := auditFor(ctx, domain.AuditCreate, "student", "", map[string]any{"fields": []string{"national_id", "student_code", "name"}})
 	return s.repo.Create(ctx, tenant.SchoolIDFromContext(ctx), domain.NewStudent{
 		NationalIDEnc: enc, NationalIDHash: s.cipher.Hash(in.NationalID),
-		StudentCode: strings.TrimSpace(in.StudentCode),
-		Profile:     toPersonProfile(in.Prefix, in.FirstName, in.LastName, in.BirthDate, in.Phone, in.Address),
+		StudentCode: strings.TrimSpace(in.StudentCode), Status: status,
+		Profile: toPersonProfile(in.Prefix, in.FirstName, in.LastName, in.BirthDate, in.Phone, in.Address),
 	}, audit)
 }
 
@@ -222,9 +255,13 @@ func (s *StudentService) Update(ctx context.Context, id string, in UpdateStudent
 	if strings.TrimSpace(in.StudentCode) == "" || strings.TrimSpace(in.FirstName) == "" || strings.TrimSpace(in.LastName) == "" {
 		return domain.ErrValidation
 	}
+	status := normalizeStatus(in.Status)
+	if status == "" {
+		return domain.ErrValidation
+	}
 	up := domain.UpdateStudent{
-		StudentCode: strings.TrimSpace(in.StudentCode),
-		Profile:     toPersonProfile(in.Prefix, in.FirstName, in.LastName, in.BirthDate, in.Phone, in.Address),
+		StudentCode: strings.TrimSpace(in.StudentCode), Status: status,
+		Profile: toPersonProfile(in.Prefix, in.FirstName, in.LastName, in.BirthDate, in.Phone, in.Address),
 	}
 	touched := []string{"student_code", "name", "address", "contact"}
 	if in.NationalID != "" {

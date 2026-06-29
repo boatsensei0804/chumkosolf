@@ -71,6 +71,52 @@ func (r *UserRepository) scanUser(ctx context.Context, q string, args ...any) (*
 	return &u, nil
 }
 
+// CreateKiosk สร้างบัญชี role 'kiosk' (เครื่องสแกนหน้า) — password hash มาจาก service
+func (r *UserRepository) CreateKiosk(ctx context.Context, schoolID, username, passwordHash string) (string, error) {
+	var id string
+	err := r.db.QueryRow(ctx,
+		`INSERT INTO users (school_id, username, password_hash, role) VALUES ($1, $2, $3, 'kiosk') RETURNING id`,
+		schoolID, username, passwordHash).Scan(&id)
+	if err != nil {
+		return "", mapUniqueViolation(err)
+	}
+	return id, nil
+}
+
+// ListKiosk คืนบัญชี kiosk ทั้งหมดของโรงเรียน (ที่ยังไม่ถูกลบ)
+func (r *UserRepository) ListKiosk(ctx context.Context, schoolID string) ([]domain.UserBrief, error) {
+	rows, err := r.db.Query(ctx,
+		`SELECT id, username, is_active, created_at::text FROM users
+		 WHERE school_id = $1 AND role = 'kiosk' AND deleted_at IS NULL ORDER BY created_at`,
+		schoolID)
+	if err != nil {
+		return nil, fmt.Errorf("repository: list kiosk users: %w", err)
+	}
+	defer rows.Close()
+
+	var out []domain.UserBrief
+	for rows.Next() {
+		var u domain.UserBrief
+		if err := rows.Scan(&u.ID, &u.Username, &u.IsActive, &u.CreatedAt); err != nil {
+			return nil, fmt.Errorf("repository: scan kiosk user: %w", err)
+		}
+		out = append(out, u)
+	}
+	return out, rows.Err()
+}
+
+// DeleteKiosk ลบบัญชี kiosk (soft delete) — เฉพาะ role kiosk เท่านั้น
+func (r *UserRepository) DeleteKiosk(ctx context.Context, schoolID, userID string) (bool, error) {
+	tag, err := r.db.Exec(ctx,
+		`UPDATE users SET deleted_at = now(), updated_at = now()
+		 WHERE school_id = $1 AND id = $2 AND role = 'kiosk' AND deleted_at IS NULL`,
+		schoolID, userID)
+	if err != nil {
+		return false, fmt.Errorf("repository: delete kiosk user: %w", err)
+	}
+	return tag.RowsAffected() > 0, nil
+}
+
 // CurrentSemesterID คืน semester ที่ active ของโรงเรียน
 func (r *UserRepository) CurrentSemesterID(ctx context.Context, schoolID string) (string, error) {
 	const q = `

@@ -1,0 +1,11 @@
+ALTER TABLE schools
+    DROP COLUMN IF EXISTS house_no,
+    DROP COLUMN IF EXISTS moo,
+    DROP COLUMN IF EXISTS road,
+    DROP COLUMN IF EXISTS subdistrict,
+    DROP COLUMN IF EXISTS district,
+    DROP COLUMN IF EXISTS province,
+    DROP COLUMN IF EXISTS postal_code,
+    DROP COLUMN IF EXISTS director_name,
+    DROP COLUMN IF EXISTS email,
+    DROP COLUMN IF EXISTS website;

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -54,20 +55,29 @@ func scanPersonnel(row pgx.Row) (*domain.Personnel, error) {
 }
 
 // List คืนบุคลากรของโรงเรียน (เรียงใหม่สุดก่อน) + จำนวนรวม
-func (r *PersonnelRepository) List(ctx context.Context, schoolID string, limit, offset int) ([]domain.Personnel, int, error) {
-	const countQ = `SELECT count(*) FROM personnel WHERE school_id = $1 AND deleted_at IS NULL`
+func (r *PersonnelRepository) List(ctx context.Context, schoolID string, limit, offset int, search string) ([]domain.Personnel, int, error) {
+	// where + args ใช้ร่วมกันทั้ง count และ list (ค้นจากชื่อ/นามสกุล/เบอร์ — ไม่ค้นเลขบัตร PDPA)
+	where := "p.school_id = $1 AND p.deleted_at IS NULL"
+	args := []any{schoolID}
+	if s := strings.TrimSpace(search); s != "" {
+		args = append(args, "%"+s+"%")
+		n := len(args)
+		where += fmt.Sprintf(" AND (p.first_name ILIKE $%d OR p.last_name ILIKE $%d OR (p.first_name || ' ' || p.last_name) ILIKE $%d OR p.phone ILIKE $%d)", n, n, n, n)
+	}
+
 	var total int
-	if err := r.db.QueryRow(ctx, countQ, schoolID).Scan(&total); err != nil {
+	if err := r.db.QueryRow(ctx, `SELECT count(*) FROM personnel p WHERE `+where, args...).Scan(&total); err != nil {
 		return nil, 0, fmt.Errorf("repository: count personnel: %w", err)
 	}
 
+	listArgs := append(append([]any{}, args...), limit, offset)
 	q := `
 		SELECT ` + personnelSelectCols + `
 		FROM personnel p JOIN users u ON u.id = p.user_id
-		WHERE p.school_id = $1 AND p.deleted_at IS NULL
+		WHERE ` + where + `
 		ORDER BY p.created_at DESC
-		LIMIT $2 OFFSET $3`
-	rows, err := r.db.Query(ctx, q, schoolID, limit, offset)
+		LIMIT $` + strconv.Itoa(len(args)+1) + ` OFFSET $` + strconv.Itoa(len(args)+2)
+	rows, err := r.db.Query(ctx, q, listArgs...)
 	if err != nil {
 		return nil, 0, fmt.Errorf("repository: list personnel: %w", err)
 	}
@@ -99,6 +109,22 @@ func (r *PersonnelRepository) GetByID(ctx context.Context, schoolID, id string) 
 	}
 	if err != nil {
 		return nil, fmt.Errorf("repository: get personnel: %w", err)
+	}
+	return p, nil
+}
+
+// GetByUserID คืนโปรไฟล์บุคลากรจาก user_id (ใช้กับหน้า "ข้อมูลของฉัน")
+func (r *PersonnelRepository) GetByUserID(ctx context.Context, schoolID, userID string) (*domain.Personnel, error) {
+	q := `
+		SELECT ` + personnelSelectCols + `
+		FROM personnel p JOIN users u ON u.id = p.user_id
+		WHERE p.school_id = $1 AND p.user_id = $2 AND p.deleted_at IS NULL`
+	p, err := scanPersonnel(r.db.QueryRow(ctx, q, schoolID, userID))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("repository: get personnel by user: %w", err)
 	}
 	return p, nil
 }
@@ -307,6 +333,12 @@ func mapUniqueViolation(err error) error {
 			return domain.ErrDuplicateStudentCode
 		case strings.Contains(pgErr.ConstraintName, "student_id_guardian_id"):
 			return domain.ErrDuplicateGuardianLink
+		case strings.Contains(pgErr.ConstraintName, "grade_level"):
+			return domain.ErrDuplicateClass
+		case strings.Contains(pgErr.ConstraintName, "subject_code"):
+			return domain.ErrDuplicateSubjectCode
+		case strings.Contains(pgErr.ConstraintName, "teaching_assignments"):
+			return domain.ErrDuplicateTeachingAssignment
 		}
 	}
 	return fmt.Errorf("repository: write: %w", err)

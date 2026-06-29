@@ -13,6 +13,8 @@ function valid(): CreateStudentFormValues {
   return {
     nationalId: "1234567890123",
     studentCode: "S001",
+    status: "studying",
+    classId: "",
     prefix: "ด.ช.",
     firstName: "กิตติ",
     lastName: "เรียนดี",

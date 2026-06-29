@@ -14,7 +14,7 @@ import (
 
 // PersonnelService คือ contract ของ service ที่ handler ใช้ (interface เพื่อ test ง่าย)
 type PersonnelService interface {
-	List(ctx context.Context, page, pageSize int) ([]service.PersonnelListItem, int, error)
+	List(ctx context.Context, page, pageSize int, search string) ([]service.PersonnelListItem, int, error)
 	Get(ctx context.Context, id string) (*service.PersonnelDetail, error)
 	Create(ctx context.Context, in service.CreatePersonnelInput) (string, error)
 	Update(ctx context.Context, id string, in service.UpdatePersonnelInput) error
@@ -86,7 +86,7 @@ func (h *PersonnelHandler) List(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size", "20"))
 
-	items, total, err := h.svc.List(c.UserContext(), page, pageSize)
+	items, total, err := h.svc.List(c.UserContext(), page, pageSize, c.Query("q"))
 	if err != nil {
 		return respondServiceError(c, err)
 	}

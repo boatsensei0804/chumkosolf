@@ -7,7 +7,16 @@ const (
 	RoleTeacher    = "teacher"
 	RoleExecutive  = "executive"
 	RoleStudent    = "student"
+	RoleKiosk      = "kiosk" // บัญชีเครื่องสแกนหน้าเข้าเรียน (เข้าได้เฉพาะหน้า kiosk)
 )
+
+// UserBrief ข้อมูลย่อของบัญชี (ใช้แสดงรายการบัญชี kiosk)
+type UserBrief struct {
+	ID        string
+	Username  string
+	IsActive  bool
+	CreatedAt string
+}
 
 // User คือบัญชีผู้ใช้ที่ใช้ login (ครู/ผู้บริหาร/นักเรียน ใช้ตารางเดียวกัน)
 // PasswordHash เป็น bcrypt — ห้ามส่งออกนอก service ชั้นใน

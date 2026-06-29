@@ -25,12 +25,9 @@ export type PersonnelListResult = {
   total: number;
 };
 
-export async function listPersonnel(page: number, pageSize: number): Promise<PersonnelListResult> {
-  const { data, meta } = await apiRequestWithMeta(
-    `/personnel?page=${page}&page_size=${pageSize}`,
-    personnelListSchema,
-    { token: requireToken() },
-  );
+export async function listPersonnel(page: number, pageSize: number, search = ""): Promise<PersonnelListResult> {
+  const qs = `page=${page}&page_size=${pageSize}${search ? `&q=${encodeURIComponent(search)}` : ""}`;
+  const { data, meta } = await apiRequestWithMeta(`/personnel?${qs}`, personnelListSchema, { token: requireToken() });
   return { items: data, total: meta?.total ?? data.length };
 }
 

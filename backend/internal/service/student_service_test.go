@@ -29,7 +29,7 @@ func newFakeStudentRepo() *fakeStudentRepo {
 	return &fakeStudentRepo{byID: map[string]*domain.Student{}, hashes: map[string]bool{}, codes: map[string]bool{}}
 }
 
-func (r *fakeStudentRepo) List(_ context.Context, schoolID string, _, _ int) ([]domain.Student, int, error) {
+func (r *fakeStudentRepo) List(_ context.Context, schoolID string, _, _ int, _ string) ([]domain.Student, int, error) {
 	var out []domain.Student
 	for _, s := range r.byID {
 		if s.SchoolID == schoolID {
@@ -46,6 +46,9 @@ func (r *fakeStudentRepo) GetByID(_ context.Context, schoolID, id string) (*doma
 	cp := *s
 	return &cp, nil
 }
+func (r *fakeStudentRepo) CurrentClass(_ context.Context, _, _, _ string) (string, string, string, error) {
+	return "", "", "", nil
+}
 func (r *fakeStudentRepo) Create(_ context.Context, schoolID string, ns domain.NewStudent, _ domain.AuditEntry) (string, error) {
 	if r.hashes[schoolID+"|"+ns.NationalIDHash] {
 		return "", domain.ErrDuplicateNationalID
@@ -55,7 +58,7 @@ func (r *fakeStudentRepo) Create(_ context.Context, schoolID string, ns domain.N
 	}
 	r.seq++
 	id := "st" + string(rune('0'+r.seq))
-	r.byID[id] = &domain.Student{ID: id, SchoolID: schoolID, NationalIDEnc: ns.NationalIDEnc, NationalIDHash: ns.NationalIDHash, StudentCode: ns.StudentCode, Profile: ns.Profile}
+	r.byID[id] = &domain.Student{ID: id, SchoolID: schoolID, NationalIDEnc: ns.NationalIDEnc, NationalIDHash: ns.NationalIDHash, StudentCode: ns.StudentCode, Status: ns.Status, Profile: ns.Profile}
 	r.hashes[schoolID+"|"+ns.NationalIDHash] = true
 	r.codes[schoolID+"|"+ns.StudentCode] = true
 	return id, nil
@@ -198,6 +201,20 @@ func TestStudentCreate_SuccessEncryption(t *testing.T) {
 	}
 	if strings.Contains(string(repo.byID[id].NationalIDEnc), "1234567890123") {
 		t.Error("เลขบัตรต้องไม่เก็บเป็น plaintext")
+	}
+	// ไม่ระบุ status → default = กำลังศึกษา
+	if repo.byID[id].Status != domain.StudentStatusStudying {
+		t.Errorf("status = %q ควร default เป็น studying", repo.byID[id].Status)
+	}
+}
+
+func TestStudentCreate_InvalidStatus(t *testing.T) {
+	svc := NewStudentService(newFakeStudentRepo(), &fakeWGChecker{}, testCipher(t))
+	in := validStudentInput()
+	in.Status = "graduated"
+	_, err := svc.Create(adminCtx("school-A"), in)
+	if !errors.Is(err, domain.ErrValidation) {
+		t.Errorf("err = %v, want ErrValidation (status ไม่ถูกต้อง)", err)
 	}
 }
 

@@ -2,11 +2,14 @@ import { z } from "zod";
 
 import { addressFormSchema } from "@/features/personnel/formSchema";
 import type { AddressData } from "@/shared/schemas/personnel";
-import type { CreateStudentBody, UpdateStudentBody } from "@/shared/schemas/student";
+import { studentStatusSchema, type CreateStudentBody, type UpdateStudentBody } from "@/shared/schemas/student";
 
 // form schema นักเรียน (camelCase + ข้อความไทย)
 const profileShape = {
   studentCode: z.string().min(1, "กรุณากรอกรหัสนักเรียน"),
+  status: studentStatusSchema,
+  // classId: ห้องของเทอมปัจจุบัน (ไม่บังคับ; "" = ยังไม่จัดห้อง) — บันทึกผ่าน enrollment แยก
+  classId: z.string(),
   prefix: z.string(),
   firstName: z.string().min(1, "กรุณากรอกชื่อ"),
   lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
@@ -44,6 +47,7 @@ export function toStudentBody(v: CreateStudentFormValues): CreateStudentBody & U
   return {
     national_id: v.nationalId,
     student_code: v.studentCode,
+    status: v.status,
     prefix: v.prefix,
     first_name: v.firstName,
     last_name: v.lastName,

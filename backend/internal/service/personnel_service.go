@@ -19,7 +19,7 @@ const personnelWorkGroupCode = "personnel"
 // PersonnelRepository คือ contract ของชั้น DB สำหรับบุคลากร (ทุก method scope school_id)
 type PersonnelRepository interface {
 	Create(ctx context.Context, schoolID string, np domain.NewPersonnel, audit domain.AuditEntry) (string, error)
-	List(ctx context.Context, schoolID string, limit, offset int) ([]domain.Personnel, int, error)
+	List(ctx context.Context, schoolID string, limit, offset int, search string) ([]domain.Personnel, int, error)
 	GetByID(ctx context.Context, schoolID, id string) (*domain.Personnel, error)
 	Update(ctx context.Context, schoolID, id string, up domain.UpdatePersonnel, audit domain.AuditEntry) (bool, error)
 	SoftDelete(ctx context.Context, schoolID, id string, audit domain.AuditEntry) (bool, error)
@@ -128,7 +128,7 @@ var nationalIDPattern = regexp.MustCompile(`^[0-9]{13}$`)
 // --- use cases ---
 
 // List คืนรายการบุคลากร (แบ่งหน้า) — เฉพาะผู้มีสิทธิ์กลุ่มงานบุคคล
-func (s *PersonnelService) List(ctx context.Context, page, pageSize int) ([]PersonnelListItem, int, error) {
+func (s *PersonnelService) List(ctx context.Context, page, pageSize int, search string) ([]PersonnelListItem, int, error) {
 	if err := s.ensureCanManage(ctx); err != nil {
 		return nil, 0, err
 	}
@@ -142,7 +142,7 @@ func (s *PersonnelService) List(ctx context.Context, page, pageSize int) ([]Pers
 	}
 	offset := (page - 1) * pageSize
 
-	rows, total, err := s.repo.List(ctx, schoolID, pageSize, offset)
+	rows, total, err := s.repo.List(ctx, schoolID, pageSize, offset, search)
 	if err != nil {
 		return nil, 0, err
 	}

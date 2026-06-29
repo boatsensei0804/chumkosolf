@@ -1,9 +1,17 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render as rtlRender, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { PersonnelForm } from "./PersonnelForm";
 import { emptyAddress, type CreatePersonnelFormValues } from "./formSchema";
+
+// PersonnelForm ใช้ react-query (โหลดข้อมูลที่อยู่) → ต้องมี QueryClientProvider
+function render(ui: ReactNode): ReturnType<typeof rtlRender> {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return rtlRender(<QueryClientProvider client={qc}>{ui}</QueryClientProvider>);
+}
 
 function emptyValues(): CreatePersonnelFormValues {
   return {
