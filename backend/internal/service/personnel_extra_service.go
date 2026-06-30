@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // personnelGuard: ตรวจสิทธิ์กลุ่มงานบุคคล + ยืนยันว่ามี personnel จริงในโรงเรียน

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // MePersonnelRepository — เข้าถึง/แก้โปรไฟล์บุคลากรของผู้ใช้เอง (ไม่มี work-group guard)

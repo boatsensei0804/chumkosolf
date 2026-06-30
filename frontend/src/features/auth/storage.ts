@@ -2,9 +2,9 @@ import type { LoginResult, UserInfo } from "@/shared/schemas/auth";
 
 // เก็บ session ฝั่ง client — เฟสนี้ใช้ localStorage (ภายหลังย้ายเป็น httpOnly cookie ได้)
 // แยก logic การเก็บ token ออกจาก component ตามกฎ business-logic-นอก-component
-const ACCESS_TOKEN_KEY = "chumko.access_token";
-const REFRESH_TOKEN_KEY = "chumko.refresh_token";
-const USER_KEY = "chumko.user";
+const ACCESS_TOKEN_KEY = "chumkosoft.access_token";
+const REFRESH_TOKEN_KEY = "chumkosoft.refresh_token";
+const USER_KEY = "chumkosoft.user";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";

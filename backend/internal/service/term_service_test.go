@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 type fakeTermRepo struct {

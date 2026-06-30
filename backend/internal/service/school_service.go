@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // hhmmPattern ตรวจรูปแบบเวลา HH:MM (00:00–23:59)

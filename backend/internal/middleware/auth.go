@@ -7,10 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 
-	"github.com/chumko-platform/backend/internal/auth"
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/httputil"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/auth"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/httputil"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // localIsSchoolAdmin คือ key ใน fiber locals สำหรับสถานะ school admin

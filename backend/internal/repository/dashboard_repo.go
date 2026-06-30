@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // DashboardRepository — ข้อมูลสรุปสำหรับหน้าแรก (ที่ปรึกษา/เช็คชื่อวันนี้/ตารางสอน)

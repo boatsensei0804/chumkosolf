@@ -8,10 +8,10 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/httputil"
-	"github.com/chumko-platform/backend/internal/service"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/httputil"
+	"github.com/chumkosoft/backend/internal/service"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // AuthService คือ contract ของ service ที่ handler ใช้ (interface เพื่อ test ง่าย)

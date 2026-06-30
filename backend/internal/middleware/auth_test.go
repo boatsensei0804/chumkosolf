@@ -9,8 +9,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/chumko-platform/backend/internal/auth"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/auth"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 type fakeSemVerifier struct {

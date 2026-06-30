@@ -8,8 +8,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/chumko-platform/backend/internal/auth"
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/auth"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // --- fakes ---

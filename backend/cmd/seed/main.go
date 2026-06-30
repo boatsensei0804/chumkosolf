@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/chumko-platform/backend/internal/database"
+	"github.com/chumkosoft/backend/internal/database"
 )
 
 // โรงเรียน dev (ตรงกับ migration 000099_seed_initial)

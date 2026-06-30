@@ -1,4 +1,4 @@
-# backend/CLAUDE.md — chumko-platform Golang Backend
+# backend/CLAUDE.md — chumkosoft Golang Backend
 
 อ่านไฟล์นี้ก่อนแตะโค้ด backend ทุกครั้ง ใช้คู่กับ `../CLAUDE.md` (context หลัก)
 

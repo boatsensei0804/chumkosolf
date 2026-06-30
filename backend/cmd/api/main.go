@@ -9,11 +9,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/config"
-	"github.com/chumko-platform/backend/internal/crypto"
-	"github.com/chumko-platform/backend/internal/database"
-	"github.com/chumko-platform/backend/internal/server"
-	"github.com/chumko-platform/backend/internal/storage"
+	"github.com/chumkosoft/backend/internal/config"
+	"github.com/chumkosoft/backend/internal/crypto"
+	"github.com/chumkosoft/backend/internal/database"
+	"github.com/chumkosoft/backend/internal/server"
+	"github.com/chumkosoft/backend/internal/storage"
 )
 
 func main() {
@@ -64,7 +64,7 @@ func main() {
 			log.Fatalf("server หยุดทำงาน: %v", err)
 		}
 	}()
-	log.Printf("chumko-platform backend ทำงานที่พอร์ต %s (env=%s)", cfg.HTTPPort, cfg.AppEnv)
+	log.Printf("chumkosoft backend ทำงานที่พอร์ต %s (env=%s)", cfg.HTTPPort, cfg.AppEnv)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

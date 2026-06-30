@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // SubjectRepository — รายวิชา (ถาวร, scope school_id)

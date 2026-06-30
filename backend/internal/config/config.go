@@ -72,7 +72,7 @@ func Load() (*Config, error) {
 			PublicEndpoint: os.Getenv("STORAGE_PUBLIC_ENDPOINT"),
 			AccessKey:      os.Getenv("STORAGE_ACCESS_KEY"),
 			SecretKey:      os.Getenv("STORAGE_SECRET_KEY"),
-			Bucket:         getEnv("STORAGE_BUCKET", "chumko-files"),
+			Bucket:         getEnv("STORAGE_BUCKET", "chumkosoft-files"),
 			UseSSL:         os.Getenv("STORAGE_USE_SSL") == "true",
 			Region:         getEnv("STORAGE_REGION", "us-east-1"),
 		},

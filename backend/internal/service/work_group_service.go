@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // WorkGroupRepository contract ของชั้น DB สำหรับกลุ่มงาน + การมอบหมาย

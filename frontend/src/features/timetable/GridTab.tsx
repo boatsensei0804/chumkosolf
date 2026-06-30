@@ -18,7 +18,7 @@ import {
 // ข้อมูลที่ลากอยู่: วิชาที่จะวาง + ช่องต้นทาง (ถ้าเป็นการย้าย)
 type DragPayload = { assignmentId: string; fromSlotId: string };
 
-const MIME = "application/x-chumko-assignment";
+const MIME = "application/x-chumkosoft-assignment";
 
 export function GridTab({ readOnly = false }: { readOnly?: boolean }): ReactNode {
   const { message } = App.useApp();

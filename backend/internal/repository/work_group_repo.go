@@ -6,7 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // WorkGroupRepository เข้าถึงตาราง work_groups + user_work_groups (scope school_id)

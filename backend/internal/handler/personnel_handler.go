@@ -8,8 +8,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/chumko-platform/backend/internal/httputil"
-	"github.com/chumko-platform/backend/internal/service"
+	"github.com/chumkosoft/backend/internal/httputil"
+	"github.com/chumkosoft/backend/internal/service"
 )
 
 // PersonnelService คือ contract ของ service ที่ handler ใช้ (interface เพื่อ test ง่าย)

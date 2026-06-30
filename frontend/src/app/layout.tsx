@@ -21,7 +21,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "chumko-platform",
+  title: "chumkosoft",
   description: "ระบบบริหารจัดการโรงเรียน",
 };
 

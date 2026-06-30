@@ -1,4 +1,4 @@
-module github.com/chumko-platform/backend
+module github.com/chumkosoft/backend
 
 go 1.26
 

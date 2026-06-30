@@ -1,6 +1,6 @@
 # Makefile — คำสั่งช่วยพัฒนา backend
 # DATABASE_URL ใช้ host.docker.internal ให้ migrate (ใน container) ต่อ postgres บนเครื่อง
-DATABASE_URL ?= postgres://chumko:chumko_dev_pwd@host.docker.internal:5432/chumko?sslmode=disable
+DATABASE_URL ?= postgres://chumkosoft:chumkosoft_dev_pwd@host.docker.internal:5432/chumkosoft?sslmode=disable
 MIGRATE_IMAGE := migrate/migrate:v4.17.1
 
 .PHONY: help test vet lint build run tidy seed-admin migrate-up migrate-down migrate-create

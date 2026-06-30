@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/chumko-platform/backend/internal/httputil"
-	"github.com/chumko-platform/backend/internal/service"
+	"github.com/chumkosoft/backend/internal/httputil"
+	"github.com/chumkosoft/backend/internal/service"
 )
 
 // StudentPhotoService contract ที่ handler ใช้ (รูปนักเรียนหลายรูป + เลือกรูปโปรไฟล์)

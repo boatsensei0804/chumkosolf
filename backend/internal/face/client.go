@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // Client เรียก face-svc (Python) เพื่อคำนวณ embedding ใบหน้า — stateless

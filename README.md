@@ -1,4 +1,4 @@
-# chumko-platform
+# chumkosoft
 
 ระบบบริหารจัดการโรงเรียน (School Management System) — ดู context และกฎทั้งหมดใน [CLAUDE.md](./CLAUDE.md)
 
@@ -26,14 +26,14 @@ migration จะรันอัตโนมัติผ่าน service `migrat
 ```bash
 cd backend
 SEED_ADMIN_PASSWORD=yourpassword \
-DATABASE_URL=postgres://chumko:chumko_dev_pwd@localhost:5432/chumko?sslmode=disable \
+DATABASE_URL=postgres://chumkosoft:chumkosoft_dev_pwd@localhost:5432/chumkosoft?sslmode=disable \
 make seed-admin
 ```
 
 ## โครงสร้าง
 
 ```
-chumko-platform/
+chumkosoft/
 ├── docker-compose.yml          # dev (hot reload)
 ├── docker-compose.prod.yml     # prod (image ที่ build แล้ว)
 ├── backend/

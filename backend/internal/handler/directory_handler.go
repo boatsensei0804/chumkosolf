@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/chumko-platform/backend/internal/httputil"
-	"github.com/chumko-platform/backend/internal/service"
+	"github.com/chumkosoft/backend/internal/httputil"
+	"github.com/chumkosoft/backend/internal/service"
 )
 
 // DirectoryService contract ที่ handler ใช้ (ดู/ค้นหาห้องเรียน-นักเรียน read-only)

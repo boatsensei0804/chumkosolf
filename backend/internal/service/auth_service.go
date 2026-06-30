@@ -9,8 +9,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/chumko-platform/backend/internal/auth"
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/auth"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // UserRepository คือ contract ที่ repository ชั้น DB ต้องทำให้ — ทุก method scope ด้วย school_id

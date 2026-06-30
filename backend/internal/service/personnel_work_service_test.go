@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // --- fake work repo (in-memory) ---

@@ -6,7 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/chumko-platform/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/domain"
 )
 
 // StudentFaceEmbeddingRepository — embedding ใบหน้านักเรียน (1 รูป = 1 แถว) สำหรับระบบสแกนหน้า

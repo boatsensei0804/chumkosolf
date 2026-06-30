@@ -1,4 +1,4 @@
-# frontend/CLAUDE.md — chumko-platform Next.js Frontend
+# frontend/CLAUDE.md — chumkosoft Next.js Frontend
 
 อ่านไฟล์นี้ก่อนแตะโค้ด frontend ทุกครั้ง ใช้คู่กับ `../CLAUDE.md` (context หลัก)
 

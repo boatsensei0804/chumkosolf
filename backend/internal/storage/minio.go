@@ -10,7 +10,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
-	"github.com/chumko-platform/backend/internal/config"
+	"github.com/chumkosoft/backend/internal/config"
 )
 
 // MinioStorage คือ implementation ของ Storage บน MinIO/S3

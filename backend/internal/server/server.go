@@ -9,16 +9,16 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/chumko-platform/backend/internal/auth"
-	"github.com/chumko-platform/backend/internal/config"
-	"github.com/chumko-platform/backend/internal/crypto"
-	"github.com/chumko-platform/backend/internal/face"
-	"github.com/chumko-platform/backend/internal/handler"
-	"github.com/chumko-platform/backend/internal/httputil"
-	"github.com/chumko-platform/backend/internal/middleware"
-	"github.com/chumko-platform/backend/internal/repository"
-	"github.com/chumko-platform/backend/internal/service"
-	"github.com/chumko-platform/backend/internal/storage"
+	"github.com/chumkosoft/backend/internal/auth"
+	"github.com/chumkosoft/backend/internal/config"
+	"github.com/chumkosoft/backend/internal/crypto"
+	"github.com/chumkosoft/backend/internal/face"
+	"github.com/chumkosoft/backend/internal/handler"
+	"github.com/chumkosoft/backend/internal/httputil"
+	"github.com/chumkosoft/backend/internal/middleware"
+	"github.com/chumkosoft/backend/internal/repository"
+	"github.com/chumkosoft/backend/internal/service"
+	"github.com/chumkosoft/backend/internal/storage"
 )
 
 // Deps คือ dependency ที่ server ต้องใช้ (inject จาก main)
@@ -35,7 +35,7 @@ type Deps struct {
 // New สร้าง Fiber app พร้อม middleware กลางและ route พื้นฐาน
 func New(deps Deps) *fiber.App {
 	app := fiber.New(fiber.Config{
-		AppName:               "chumko-platform",
+		AppName:               "chumkosoft",
 		DisableStartupMessage: true,
 		// รองรับอัปโหลดไฟล์แนบผลงานครู (สูงสุด 10 MB + เผื่อ overhead ของ multipart)
 		BodyLimit: 12 << 20,

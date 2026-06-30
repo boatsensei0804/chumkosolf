@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // DirectoryService ให้ครู "ดู/ค้นหา" ห้องเรียนและนักเรียนแบบ read-only (ข้อมูลพื้นฐานเท่านั้น)

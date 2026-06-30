@@ -12,7 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const issuer = "chumko-platform"
+const issuer = "chumkosoft"
 
 // Claims คือข้อมูล scope/ตัวตนที่ฝังใน access token
 // (พอสำหรับ middleware สร้าง tenant.Identity โดยไม่ต้องแตะ DB ทุก request)

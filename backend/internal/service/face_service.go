@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/face"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/face"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // --- contracts (narrow interfaces เพื่อ test ง่าย) ---

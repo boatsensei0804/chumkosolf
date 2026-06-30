@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chumko-platform/backend/internal/domain"
-	"github.com/chumko-platform/backend/internal/storage"
-	"github.com/chumko-platform/backend/internal/tenant"
+	"github.com/chumkosoft/backend/internal/domain"
+	"github.com/chumkosoft/backend/internal/storage"
+	"github.com/chumkosoft/backend/internal/tenant"
 )
 
 // studentPhotoURLExpiry คืออายุของ signed URL รูปนักเรียน (ใช้แสดง/ดึงไปทำ dataset สแกนหน้า)

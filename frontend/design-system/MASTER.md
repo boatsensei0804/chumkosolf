@@ -1,4 +1,4 @@
-# chumko-platform — Design System (MASTER)
+# chumkosoft — Design System (MASTER)
 
 Source of truth สำหรับ UI ทั้งระบบ ทุกหน้า/ทุก component ต้องอิงไฟล์นี้
 
